@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    tools:background="@color/black"
-    tools:layout_height="64dp"
-    tools:layout_width="64dp">
+    tools:background="@color/black">
 
     <com.example.animation.animation.ResultView
         android:id="@+id/result_progress"
@@ -21,12 +19,10 @@
 
     <ImageView
         android:id="@+id/result_close_image"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:src="@drawable/ic_close"
         android:visibility="invisible"
-        app:layout_constraintDimensionRatio="1"
-        app:layout_constraintHeight_percent="0.4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/purple_500"
