@@ -63,9 +63,9 @@ class ResultView @JvmOverloads constructor(
         // When calculating radius we need to consider line width (stroke), so that the view would fit exactly
         val radius: Float
         radius = if (height >= width) {
-            (width / 2).toFloat() - (progressWidth / 2)
+            (width / 2).toFloat() - progressWidth
         } else {
-            (height / 2).toFloat() - (progressWidth / 2)
+            (height / 2).toFloat() - progressWidth
         }
 
         progressRect.set(

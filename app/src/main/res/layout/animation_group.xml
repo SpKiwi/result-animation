@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/purple_500"
+    tools:background="@color/black"
     tools:layout_height="64dp"
     tools:layout_width="64dp">
 
@@ -16,8 +16,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:progressColor="@color/white"
-        app:progressWidth="8dp" />
+        app:progressColor="@color/purple_500"
+        app:progressWidth="4dp" />
 
     <ImageView
         android:id="@+id/result_close_image"
@@ -26,17 +26,18 @@
         android:src="@drawable/ic_close"
         android:visibility="invisible"
         app:layout_constraintDimensionRatio="1"
-        app:layout_constraintHeight_percent="0.5"
+        app:layout_constraintHeight_percent="0.4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/purple_500"
         tools:visibility="visible" />
 
     <TextView
         android:id="@+id/result_timer_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:textSize="24dp"
+        android:textColor="@color/purple_500"
+        android:textSize="16dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

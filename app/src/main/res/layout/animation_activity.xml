@@ -6,8 +6,8 @@
 
     <com.example.animation.animation.AnimationGroup
         android:id="@+id/animationGroup"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginTop="64dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
