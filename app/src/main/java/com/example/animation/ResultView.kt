@@ -1,14 +1,11 @@
 package com.example.animation
 
+import android.animation.AnimatorSet
 import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 
 class ResultView @JvmOverloads constructor(
@@ -28,16 +25,33 @@ class ResultView @JvmOverloads constructor(
 //    private lateinit var closeButtonTimeRange: LongRange
 //    private lateinit var resultAnimationTimeRange: LongRange
 
-    private val viewSpace = RectF()
-    private val lineWidth = 40f
+    private val progressRect = RectF()
 
-    private val activeArcPaint = Paint().apply {
+    private val progressPaint = Paint().apply {
         style = Paint.Style.STROKE
         isAntiAlias = true
-        strokeWidth = lineWidth
+        strokeWidth = PROGRESS_WIDTH
         strokeCap = Paint.Cap.ROUND
         color = Color.GREEN
     }
+
+    private val closePaint = Paint().apply {
+        style = Paint.Style.STROKE
+        isAntiAlias = true
+        strokeWidth = CLOSE_WIDTH
+        strokeCap = Paint.Cap.ROUND
+        color = Color.BLACK
+    }
+
+    private val textPaint = Paint().apply {
+        isAntiAlias = true
+        color = Color.BLACK
+        textSize = resources.getDimensionPixelOffset(R.dimen.result_text_size).toFloat() // todo change to percentages?
+        textAlign = Paint.Align.CENTER
+    }
+
+    private var textXPos = -1f
+    private var textYPos = -1f
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -51,17 +65,20 @@ class ResultView @JvmOverloads constructor(
         // When calculating radius we need to consider line width (stroke), so that the view would fit exactly
         val radius: Float
         radius = if (height >= width) {
-            (width / 2).toFloat() - (lineWidth / 2)
+            (width / 2).toFloat() - (PROGRESS_WIDTH / 2)
         } else {
-            (height / 2).toFloat() - (lineWidth / 2)
+            (height / 2).toFloat() - (PROGRESS_WIDTH / 2)
         }
 
-        viewSpace.set(
+        progressRect.set(
             horizontalCenter - radius,
             verticalCenter - radius,
             horizontalCenter + radius,
             verticalCenter + radius
         )
+
+        textXPos = (width / 2).toFloat()
+        textYPos = ((height / 2) - ((closePaint.descent() + closePaint.ascent()) / 2))
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -69,44 +86,36 @@ class ResultView @JvmOverloads constructor(
     }
 
     private fun drawProgress(canvas: Canvas) {
-        if (currentAnimationTimeStamp in progressBarTimeRange) {
-            val percentageToFill = (360 * (currentAnimationTimeStamp.toFloat() / progressBarTimeRange.last))
-            canvas.drawArc(viewSpace, 270f, percentageToFill, false, activeArcPaint)
+        if (progressAnimator.isRunning) {
+            val progressAngle = progressAnimator.getAnimatedValue(KEY_PROGRESS_ANGLE_VALUE_HOLDER) as Float
+            val progressPercentage = progressAnimator.getAnimatedValue(KEY_PROGRESS_PERCENTAGE_VALUE_HOLDER) as Float
+            val progressTime = progressAnimator.getAnimatedValue(KEY_PROGRESS_TIME_VALUE_HOLDER) as Int
+
+            canvas.drawArc(progressRect, 270f, progressAngle, false, progressPaint)
+            canvas.drawText(progressTime.toString(), textXPos, textYPos, textPaint)
         }
     }
 
-    private fun drawCloseButton(canvas: Canvas) {
-        
-    }
+    private val progressAnimator: ValueAnimator = ValueAnimator()
 
-    private var progressBarTimeRange: LongRange = LongRange.EMPTY
-    private var closeTimeRange: LongRange = LongRange.EMPTY
-    private var resultAnimationTimeRange: LongRange = LongRange.EMPTY
-
-    private var fullAnimationDuration: Long = -1
-    private var currentAnimationTimeStamp: Long = -1
-
-    fun animateProgress(mainAnimationDuration: Long = DEFAULT_MAIN_ANIMATION_DURATION) {
+    fun changeProgressValues(mainAnimationDuration: Long = DEFAULT_MAIN_ANIMATION_DURATION) {
         if (mainAnimationDuration <= 0) {
             throw IllegalStateException("Animation duration should be greater than zero")
         }
-        fullAnimationDuration = mainAnimationDuration + DEFAULT_SECONDARY_ANIMATION_DURATION
 
-        progressBarTimeRange = 0..mainAnimationDuration
-        closeTimeRange = (mainAnimationDuration * CLOSE_ANIMATION_START_VALUE).toLong()..mainAnimationDuration
-        resultAnimationTimeRange = mainAnimationDuration..fullAnimationDuration
-
-        val valuesHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_PERCENTAGE_VALUE_HOLDER, 0f, 1f)
-        val animator = ValueAnimator().apply {
-            setValues(valuesHolder)
-            duration = fullAnimationDuration
-            addUpdateListener {
-                val fullAnimationPercentage = it.getAnimatedValue(KEY_PROGRESS_PERCENTAGE_VALUE_HOLDER) as Float
-                currentAnimationTimeStamp = (fullAnimationDuration * fullAnimationPercentage).toLong()
-                invalidate()
-            }
+        val progressPercentageValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_PERCENTAGE_VALUE_HOLDER, 0f, 1f)
+        val progressAngleValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_ANGLE_VALUE_HOLDER, 0f, 360f)
+        val progressTimeValueHolder = PropertyValuesHolder.ofInt(KEY_PROGRESS_TIME_VALUE_HOLDER, mainAnimationDuration.toInt() / 1_000, 0)
+        progressAnimator.apply {
+            setValues(progressPercentageValueHolder, progressAngleValueHolder, progressTimeValueHolder)
+            duration = mainAnimationDuration
+            addUpdateListener { invalidate() }
         }
-        animator.start()
+
+        AnimatorSet().apply {
+            playSequentially(progressAnimator)
+            start()
+        }
     }
 
     interface AutofollowListener {
@@ -116,7 +125,14 @@ class ResultView @JvmOverloads constructor(
     }
 
     companion object {
+        private const val PROGRESS_WIDTH = 40f // todo change to percentages OR convert from dp to px
+        private const val CLOSE_WIDTH = 10f // todo change to percentages OR convert from dp to px
+        private const val CLOSE_SIZE_PERCENTAGE = 0.33f
+
         private const val KEY_PROGRESS_PERCENTAGE_VALUE_HOLDER = "KEY_PROGRESS_PERCENTAGE_VALUE_HOLDER"
+        private const val KEY_PROGRESS_ANGLE_VALUE_HOLDER = "KEY_PROGRESS_ANGLE_VALUE_HOLDER"
+        private const val KEY_PROGRESS_TIME_VALUE_HOLDER = "KEY_PROGRESS_TIME_VALUE_HOLDER"
+
         private const val DEFAULT_MAIN_ANIMATION_DURATION = 5_000L
         private const val DEFAULT_SECONDARY_ANIMATION_DURATION = 1_000L
         private const val CLOSE_ANIMATION_START_VALUE = 0.75
