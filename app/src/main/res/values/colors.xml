@@ -7,4 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- TODO change to color_primary -->
+    <color name="result_progress_default_color">@color/purple_500</color>
 </resources>
