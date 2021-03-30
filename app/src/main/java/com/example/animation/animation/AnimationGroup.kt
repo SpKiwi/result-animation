@@ -1,6 +1,5 @@
 package com.example.animation.animation
 
-import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
@@ -8,14 +7,14 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.AnticipateOvershootInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.animation.addListener
 import androidx.core.view.ViewCompat
 import com.example.animation.R
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 class AnimationGroup @JvmOverloads constructor(
     context: Context,
@@ -54,7 +53,7 @@ class AnimationGroup @JvmOverloads constructor(
 
         val progressPercentageValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_PERCENTAGE_VALUE_HOLDER, 0f, 1f)
         val progressAngleValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_ANGLE_VALUE_HOLDER, 0f, 360f)
-        val progressTimeValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_TIME_VALUE_HOLDER, (mainAnimationDurationMillis / 1_000).toFloat(), 0f)
+        val progressTimeValueHolder = PropertyValuesHolder.ofInt(KEY_PROGRESS_TIME_VALUE_HOLDER, (mainAnimationDurationMillis / 1_000).toInt(), 0)
         progressAnimator.apply {
             setValues(progressPercentageValueHolder, progressAngleValueHolder, progressTimeValueHolder)
             duration = mainAnimationDurationMillis
@@ -67,36 +66,32 @@ class AnimationGroup @JvmOverloads constructor(
         progressTimer.visibility = View.VISIBLE
 
         val revealAnimator = createRevealAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton, progressTimer)
-        val concealAnimator = ValueAnimator().apply {
-            duration = (mainAnimationDurationMillis * 0.15).toLong()
-            interpolator = OvershootInterpolator()
-            addUpdateListener {
-                animateProgressConceal()
-            }
+        val concealCloseButtonAnimator = createConcealAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton).apply {
+            startDelay = (0.6 * mainAnimationDurationMillis).toLong()
         }
+        val fadeProgressAnimator = createFadeOutAnimator((mainAnimationDurationMillis * 0.15).toLong(), progressTimer)
 
-        revealAnimator.start()
         progressAnimator.start()
-//        AnimatorSet().apply {
-//            playSequentially(progressAnimator)
-//            start()
-//        }
+        revealAnimator.start()
+        AnimatorSet().apply {
+            play(concealCloseButtonAnimator).before(fadeProgressAnimator)
+            start()
+        }
     }
 
     private fun animateProgress() {
         val progressAngle = progressAnimator.getAnimatedValue(KEY_PROGRESS_ANGLE_VALUE_HOLDER) as Float
         val progressPercentage = progressAnimator.getAnimatedValue(KEY_PROGRESS_PERCENTAGE_VALUE_HOLDER) as Float
-        val progressTimeMillis = progressAnimator.getAnimatedValue(KEY_PROGRESS_TIME_VALUE_HOLDER) as Float
-        Log.d("myLog", progressTimeMillis.toString())
+        val progressTimeMillis = progressAnimator.getAnimatedValue(KEY_PROGRESS_TIME_VALUE_HOLDER) as Int
 
         progressView.progressAngle = progressAngle
         progressTimer.text = progressTimeMillis.toString()
     }
 
     private fun createRevealAnimator(duration: Long, vararg views: View): ValueAnimator {
-        val progressRevealValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_REVEAL_VALUE_HOLDER, 0f, 1f)
+        val revealValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_REVEAL_VALUE_HOLDER, 0f, 1f)
         return ValueAnimator().apply {
-            setValues(progressRevealValueHolder)
+            setValues(revealValueHolder)
             this.duration = duration
             interpolator = OvershootInterpolator()
             addUpdateListener {
@@ -110,8 +105,31 @@ class AnimationGroup @JvmOverloads constructor(
         }
     }
 
-    private fun animateProgressConceal() {
-        TODO()
+    private fun createConcealAnimator(duration: Long, view: View): ValueAnimator {
+        val concealValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_CONCEAL_VALUE_HOLDER, 1f, 0f)
+        return ValueAnimator().apply {
+            setValues(concealValueHolder)
+            this.duration = duration
+            interpolator = AnticipateOvershootInterpolator()
+            addUpdateListener {
+                val concealValue = it.getAnimatedValue(KEY_PROGRESS_CONCEAL_VALUE_HOLDER) as Float
+                view.scaleX = concealValue
+                view.scaleY = concealValue
+                view.alpha = concealValue
+            }
+        }
+    }
+
+    private fun createFadeOutAnimator(duration: Long, view: View): ValueAnimator {
+        val fadeOutValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_CONCEAL_VALUE_HOLDER, 1f, 0f)
+        return ValueAnimator().apply {
+            setValues(fadeOutValueHolder)
+            this.duration = duration
+            addUpdateListener {
+                val fadeOutValue = it.getAnimatedValue(KEY_PROGRESS_CONCEAL_VALUE_HOLDER) as Float
+                view.alpha = fadeOutValue
+            }
+        }
     }
 
     interface AutofollowListener {
@@ -122,6 +140,7 @@ class AnimationGroup @JvmOverloads constructor(
 
     companion object {
         private const val KEY_PROGRESS_PERCENTAGE_VALUE_HOLDER = "KEY_PROGRESS_PERCENTAGE_VALUE_HOLDER"
+        private const val KEY_PROGRESS_CONCEAL_VALUE_HOLDER = "KEY_PROGRESS_CONCEAL_VALUE_HOLDER"
         private const val KEY_PROGRESS_ANGLE_VALUE_HOLDER = "KEY_PROGRESS_ANGLE_VALUE_HOLDER"
         private const val KEY_PROGRESS_TIME_VALUE_HOLDER = "KEY_PROGRESS_TIME_VALUE_HOLDER"
         private const val KEY_PROGRESS_REVEAL_VALUE_HOLDER = "KEY_PROGRESS_REVEAL_VALUE_HOLDER"
