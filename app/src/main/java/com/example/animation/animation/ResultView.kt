@@ -1,4 +1,4 @@
-package com.example.animation
+package com.example.animation.animation
 
 import android.animation.AnimatorSet
 import android.animation.PropertyValuesHolder
@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import com.example.animation.R
 
 class ResultView @JvmOverloads constructor(
     context: Context,

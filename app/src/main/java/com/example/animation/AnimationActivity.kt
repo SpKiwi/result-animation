@@ -3,6 +3,7 @@ package com.example.animation
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.example.animation.animation.ResultView
 import kotlinx.coroutines.Job
 
 class AnimationActivity : AppCompatActivity() {
