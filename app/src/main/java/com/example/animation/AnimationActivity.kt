@@ -3,12 +3,13 @@ package com.example.animation
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.example.animation.animation.AnimationGroup
 import com.example.animation.animation.ResultView
 import kotlinx.coroutines.Job
 
 class AnimationActivity : AppCompatActivity() {
 
-    private val resultView: ResultView by lazy { findViewById<ResultView>(R.id.result_view) }
+    private val resultView: AnimationGroup by lazy { findViewById<AnimationGroup>(R.id.animationGroup) }
     private val testView: View by lazy { findViewById<View>(R.id.testView) }
 
     private var animationJob: Job? = null
@@ -24,7 +25,7 @@ class AnimationActivity : AppCompatActivity() {
     }
 
     private fun launchProgressAnimation() {
-        resultView.changeProgressValues(3_000)
+        resultView.changeProgressValues(5_000)
 //        animationJob?.cancel()
 //        animationJob = lifecycleScope.launch {
 //            flow<Int> {
