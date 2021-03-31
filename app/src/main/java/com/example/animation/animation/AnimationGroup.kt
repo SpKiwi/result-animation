@@ -57,10 +57,16 @@ class AnimationGroup @JvmOverloads constructor(
         }
 
         AnimatorSet().apply {
-            playSequentially(progressAnimator, circleInAnimator, checkboxAnimator, viewDisappearAnimator)
+            playSequentially(
+                AnimatorSet().apply {
+                    playTogether(progressAnimator, revealAnimator)
+                },
+                circleInAnimator,
+                checkboxAnimator,
+                viewDisappearAnimator
+            )
             start()
         }
-        revealAnimator.start()
         AnimatorSet().apply {
             play(concealCloseButtonAnimator).before(fadeProgressAnimator)
             start()
