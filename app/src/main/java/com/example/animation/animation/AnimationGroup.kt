@@ -7,6 +7,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.AnticipateOvershootInterpolator
+import android.view.animation.Interpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -44,7 +45,7 @@ class AnimationGroup @JvmOverloads constructor(
             startDelay = (0.6 * mainAnimationDurationMillis).toLong()
         }
         val fadeProgressAnimator: ValueAnimator = createFadeOutAnimator((mainAnimationDurationMillis * 0.15).toLong(), progressTimer)
-        val circleInAnimator: ValueAnimator = createCircleInAnimator(1_000L)
+        val circleInAnimator: ValueAnimator = createCircleInAnimator(300L)
 
         AnimatorSet().apply {
             play(progressAnimator).before(circleInAnimator)
@@ -118,7 +119,7 @@ class AnimationGroup @JvmOverloads constructor(
     }
 
     private fun createFadeOutAnimator(duration: Long, view: View): ValueAnimator {
-        val fadeOutValueHolder = PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 0f, 1f)
+        val fadeOutValueHolder = PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)
         return ValueAnimator().apply {
             setValues(fadeOutValueHolder)
             this.duration = duration
