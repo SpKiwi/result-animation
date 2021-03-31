@@ -21,6 +21,13 @@ class ResultView @JvmOverloads constructor(
             color = progressColor
         }
     }
+    private val circlePaint by lazy {
+        Paint().apply {
+            style = Paint.Style.FILL
+            isAntiAlias = true
+            color = progressColor
+        }
+    }
 
     private var progressColor: Int = context.resources.getColor(R.color.result_progress_default_color, context.theme)
     private var progressWidth: Float = context.resources.getDimension(R.dimen.result_default_width)
@@ -30,7 +37,7 @@ class ResultView @JvmOverloads constructor(
             field = value
             invalidate()
         }
-    var circleFillPercentage: Float = 0.0f
+    var circleClipPercentage: Float = 0.0f
         set(value) {
             field = value
             invalidate()
@@ -51,17 +58,20 @@ class ResultView @JvmOverloads constructor(
         }
     }
 
+    private var radius: Float = 0f
+    private var horizontalCenter: Float = 0f
+    private var verticalCenter: Float = 0f
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
         val height = MeasureSpec.getSize(heightMeasureSpec)
         val width = MeasureSpec.getSize(widthMeasureSpec)
 
-        val horizontalCenter = (width / 2).toFloat()
-        val verticalCenter = (height / 2).toFloat()
+        horizontalCenter = (width / 2).toFloat()
+        verticalCenter = (height / 2).toFloat()
 
         // When calculating radius we need to consider line width (stroke), so that the view would fit exactly
-        val radius: Float
         radius = if (height >= width) {
             (width / 2).toFloat() - progressWidth
         } else {
@@ -77,7 +87,16 @@ class ResultView @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas?) {
-        canvas?.drawArc(progressRect, 270f, progressAngle, false, progressPaint)
+        canvas?.let  {
+            it.drawArc(progressRect, 270f, progressAngle, false, progressPaint)
+            if (circleClipPercentage > 0) {
+                val clipPath = Path().apply {
+                    addCircle(horizontalCenter, verticalCenter, radius * circleClipPercentage, Path.Direction.CW)
+                }
+                it.clipPath(clipPath, Region.Op.DIFFERENCE)
+                it.drawCircle(horizontalCenter, verticalCenter, radius, circlePaint)
+            }
+        }
     }
 
 }

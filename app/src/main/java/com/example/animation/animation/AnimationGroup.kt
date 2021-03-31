@@ -5,16 +5,13 @@ import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.view.animation.AnticipateOvershootInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.view.ViewCompat
 import com.example.animation.R
-import kotlinx.coroutines.suspendCancellableCoroutine
 
 class AnimationGroup @JvmOverloads constructor(
     context: Context,
@@ -70,8 +67,12 @@ class AnimationGroup @JvmOverloads constructor(
             startDelay = (0.6 * mainAnimationDurationMillis).toLong()
         }
         val fadeProgressAnimator = createFadeOutAnimator((mainAnimationDurationMillis * 0.15).toLong(), progressTimer)
+        val circleInAnimator = createCircleInAnimator(1_000L)
 
-        progressAnimator.start()
+        AnimatorSet().apply {
+            play(progressAnimator).before(circleInAnimator)
+            start()
+        }
         revealAnimator.start()
         AnimatorSet().apply {
             play(concealCloseButtonAnimator).before(fadeProgressAnimator)
@@ -120,8 +121,20 @@ class AnimationGroup @JvmOverloads constructor(
         }
     }
 
+    private fun createCircleInAnimator(duration: Long): ValueAnimator {
+        val circleValueHolder = PropertyValuesHolder.ofFloat(KEY_CIRCLE_IN_VALUE, 1f, 0f)
+        return ValueAnimator().apply {
+            setValues(circleValueHolder)
+            this.duration = duration
+            addUpdateListener {
+                val showPercentage = it.getAnimatedValue(KEY_CIRCLE_IN_VALUE) as Float
+                progressView.circleClipPercentage = showPercentage
+            }
+        }
+    }
+
     private fun createFadeOutAnimator(duration: Long, view: View): ValueAnimator {
-        val fadeOutValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_CONCEAL_VALUE_HOLDER, 1f, 0f)
+        val fadeOutValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_CONCEAL_VALUE_HOLDER, 0f, 1f)
         return ValueAnimator().apply {
             setValues(fadeOutValueHolder)
             this.duration = duration
@@ -144,6 +157,7 @@ class AnimationGroup @JvmOverloads constructor(
         private const val KEY_PROGRESS_ANGLE_VALUE_HOLDER = "KEY_PROGRESS_ANGLE_VALUE_HOLDER"
         private const val KEY_PROGRESS_TIME_VALUE_HOLDER = "KEY_PROGRESS_TIME_VALUE_HOLDER"
         private const val KEY_PROGRESS_REVEAL_VALUE_HOLDER = "KEY_PROGRESS_REVEAL_VALUE_HOLDER"
+        private const val KEY_CIRCLE_IN_VALUE = "KEY_CIRCLE_IN_VALUE"
 
         private const val DEFAULT_MAIN_ANIMATION_DURATION = 5_000L
         private const val DEFAULT_SECONDARY_ANIMATION_DURATION = 1_000L
