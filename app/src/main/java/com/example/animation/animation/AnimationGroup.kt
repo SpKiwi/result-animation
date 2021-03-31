@@ -48,11 +48,10 @@ class AnimationGroup @JvmOverloads constructor(
         }
         this.mainAnimationDurationMillis = mainAnimationDurationMillis
 
-        val progressPercentageValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_PERCENTAGE_VALUE_HOLDER, 0f, 1f)
         val progressAngleValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_ANGLE_VALUE_HOLDER, 0f, 360f)
         val progressTimeValueHolder = PropertyValuesHolder.ofInt(KEY_PROGRESS_TIME_VALUE_HOLDER, (mainAnimationDurationMillis / 1_000).toInt(), 0)
         progressAnimator.apply {
-            setValues(progressPercentageValueHolder, progressAngleValueHolder, progressTimeValueHolder)
+            setValues(progressAngleValueHolder, progressTimeValueHolder)
             duration = mainAnimationDurationMillis
             addUpdateListener {
                 animateProgress()
@@ -82,7 +81,6 @@ class AnimationGroup @JvmOverloads constructor(
 
     private fun animateProgress() {
         val progressAngle = progressAnimator.getAnimatedValue(KEY_PROGRESS_ANGLE_VALUE_HOLDER) as Float
-        val progressPercentage = progressAnimator.getAnimatedValue(KEY_PROGRESS_PERCENTAGE_VALUE_HOLDER) as Float
         val progressTimeMillis = progressAnimator.getAnimatedValue(KEY_PROGRESS_TIME_VALUE_HOLDER) as Int
 
         progressView.progressAngle = progressAngle
@@ -90,13 +88,13 @@ class AnimationGroup @JvmOverloads constructor(
     }
 
     private fun createRevealAnimator(duration: Long, vararg views: View): ValueAnimator {
-        val revealValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_REVEAL_VALUE_HOLDER, 0f, 1f)
+        val revealValueHolder = PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 0f, 1f)
         return ValueAnimator().apply {
             setValues(revealValueHolder)
             this.duration = duration
             interpolator = OvershootInterpolator()
             addUpdateListener {
-                val revealValue = it.getAnimatedValue(KEY_PROGRESS_REVEAL_VALUE_HOLDER) as Float
+                val revealValue = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
                 views.forEach { view ->
                     view.scaleX = revealValue
                     view.scaleY = revealValue
@@ -107,13 +105,13 @@ class AnimationGroup @JvmOverloads constructor(
     }
 
     private fun createConcealAnimator(duration: Long, view: View): ValueAnimator {
-        val concealValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_CONCEAL_VALUE_HOLDER, 1f, 0f)
+        val concealValueHolder = PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)
         return ValueAnimator().apply {
             setValues(concealValueHolder)
             this.duration = duration
             interpolator = AnticipateOvershootInterpolator()
             addUpdateListener {
-                val concealValue = it.getAnimatedValue(KEY_PROGRESS_CONCEAL_VALUE_HOLDER) as Float
+                val concealValue = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
                 view.scaleX = concealValue
                 view.scaleY = concealValue
                 view.alpha = concealValue
@@ -122,24 +120,24 @@ class AnimationGroup @JvmOverloads constructor(
     }
 
     private fun createCircleInAnimator(duration: Long): ValueAnimator {
-        val circleValueHolder = PropertyValuesHolder.ofFloat(KEY_CIRCLE_IN_VALUE, 1f, 0f)
+        val circleValueHolder = PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)
         return ValueAnimator().apply {
             setValues(circleValueHolder)
             this.duration = duration
             addUpdateListener {
-                val showPercentage = it.getAnimatedValue(KEY_CIRCLE_IN_VALUE) as Float
+                val showPercentage = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
                 progressView.circleClipPercentage = showPercentage
             }
         }
     }
 
     private fun createFadeOutAnimator(duration: Long, view: View): ValueAnimator {
-        val fadeOutValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_CONCEAL_VALUE_HOLDER, 0f, 1f)
+        val fadeOutValueHolder = PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 0f, 1f)
         return ValueAnimator().apply {
             setValues(fadeOutValueHolder)
             this.duration = duration
             addUpdateListener {
-                val fadeOutValue = it.getAnimatedValue(KEY_PROGRESS_CONCEAL_VALUE_HOLDER) as Float
+                val fadeOutValue = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
                 view.alpha = fadeOutValue
             }
         }
@@ -152,12 +150,9 @@ class AnimationGroup @JvmOverloads constructor(
     }
 
     companion object {
-        private const val KEY_PROGRESS_PERCENTAGE_VALUE_HOLDER = "KEY_PROGRESS_PERCENTAGE_VALUE_HOLDER"
-        private const val KEY_PROGRESS_CONCEAL_VALUE_HOLDER = "KEY_PROGRESS_CONCEAL_VALUE_HOLDER"
+        private const val KEY_GENERIC_VALUE = "KEY_GENERIC_VALUE"
         private const val KEY_PROGRESS_ANGLE_VALUE_HOLDER = "KEY_PROGRESS_ANGLE_VALUE_HOLDER"
         private const val KEY_PROGRESS_TIME_VALUE_HOLDER = "KEY_PROGRESS_TIME_VALUE_HOLDER"
-        private const val KEY_PROGRESS_REVEAL_VALUE_HOLDER = "KEY_PROGRESS_REVEAL_VALUE_HOLDER"
-        private const val KEY_CIRCLE_IN_VALUE = "KEY_CIRCLE_IN_VALUE"
 
         private const val DEFAULT_MAIN_ANIMATION_DURATION = 5_000L
         private const val DEFAULT_SECONDARY_ANIMATION_DURATION = 1_000L
