@@ -52,12 +52,13 @@ class AnimationGroup @JvmOverloads constructor(
 
         val zoomOutCloseButtonAnimator: ValueAnimator = createZoomOutAnimator(scaleDuration, closeButton, AnticipateOvershootInterpolator())
         val fadeOutCloseButtonAnimator: ValueAnimator = createFadeOutAnimator(scaleDuration, closeButton, AnticipateOvershootInterpolator())
+        val concealStartTime = (mainAnimationDurationMillis * PROGRESS_CONCEAL_DURATION_MULTIPLIER).toLong()
         val concealCloseButtonAnimator: AnimatorSet = AnimatorSet().apply {
-            startDelay = (mainAnimationDurationMillis * PROGRESS_CONCEAL_DURATION_MULTIPLIER).toLong()
+            startDelay = concealStartTime
             playTogether(zoomOutCloseButtonAnimator, fadeOutCloseButtonAnimator)
         }
 
-        val fadeProgressAnimator: ValueAnimator = createFadeOutAnimator(scaleDuration, progressTimer)
+        val fadeProgressAnimator: ValueAnimator = createFadeOutAnimator(mainAnimationDurationMillis - concealStartTime - scaleDuration, progressTimer)
         val circleInAnimator: ValueAnimator = createCircleInAnimator(STROKE_INSIDE_DURATION)
         val checkboxAnimator: ValueAnimator = createSpringInAnimator(CHECKBOX_DURATION, checkboxImage).apply {
             addListener(onStart = {
@@ -81,7 +82,7 @@ class AnimationGroup @JvmOverloads constructor(
                     )
                 },
                 AnimatorSet().apply {
-                    play(concealCloseButtonAnimator).before(fadeProgressAnimator)
+                    playSequentially(concealCloseButtonAnimator, fadeProgressAnimator)
                 }
             )
             start()
