@@ -7,11 +7,11 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.AnticipateOvershootInterpolator
-import android.view.animation.Interpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.animation.addListener
 import com.example.animation.R
 
 class AnimationGroup @JvmOverloads constructor(
@@ -22,6 +22,7 @@ class AnimationGroup @JvmOverloads constructor(
     private val progressView: ResultView by lazy { findViewById<ResultView>(R.id.result_progress) }
     private val closeButton: ImageView by lazy { findViewById<ImageView>(R.id.result_close_image) }
     private val progressTimer: TextView by lazy { findViewById<TextView>(R.id.result_timer_text) }
+    private val checkboxImage: ImageView by lazy { findViewById<ImageView>(R.id.result_checkbox) }
 
     init {
         View.inflate(context, R.layout.animation_group, this)
@@ -46,15 +47,53 @@ class AnimationGroup @JvmOverloads constructor(
         }
         val fadeProgressAnimator: ValueAnimator = createFadeOutAnimator((mainAnimationDurationMillis * 0.15).toLong(), progressTimer)
         val circleInAnimator: ValueAnimator = createCircleInAnimator(300L)
+        val checkboxAnimator: ValueAnimator = createSpringRevealAnimator(300L, checkboxImage).apply {
+            addListener(onStart = {
+                checkboxImage.visibility = View.VISIBLE
+            })
+        }
+        val viewDisappearAnimator: ValueAnimator = createViewDisappearAnimator(300).apply {
+            startDelay = 500
+        }
 
         AnimatorSet().apply {
-            play(progressAnimator).before(circleInAnimator)
+            playSequentially(progressAnimator, circleInAnimator, checkboxAnimator, viewDisappearAnimator)
             start()
         }
         revealAnimator.start()
         AnimatorSet().apply {
             play(concealCloseButtonAnimator).before(fadeProgressAnimator)
             start()
+        }
+    }
+
+    private fun createViewDisappearAnimator(duration: Long): ValueAnimator {
+        val disappearValueHolder = PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)
+        return ValueAnimator().apply {
+            setValues(disappearValueHolder)
+            this.duration = duration
+            interpolator = AnticipateOvershootInterpolator()
+            addUpdateListener {
+                val disappearValue = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
+                scaleX = disappearValue
+                scaleY = disappearValue
+            }
+        }
+    }
+
+    private fun createSpringRevealAnimator(duration: Long, vararg views: View): ValueAnimator {
+        val springValueHolder = PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 0f, 1f)
+        return ValueAnimator().apply {
+            setValues(springValueHolder)
+            this.duration = duration
+            interpolator = OvershootInterpolator()
+            addUpdateListener {
+                val revealValue = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
+                views.forEach { view ->
+                    view.scaleX = revealValue
+                    view.scaleY = revealValue
+                }
+            }
         }
     }
 
