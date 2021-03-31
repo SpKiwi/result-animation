@@ -3,6 +3,7 @@ package com.example.animation.animation
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import com.example.animation.R
 
@@ -37,7 +38,7 @@ class ResultView @JvmOverloads constructor(
             field = value
             invalidate()
         }
-    var circleClipPercentage: Float = 0.0f
+    var circleClipPercentage: Float? = null
         set(value) {
             field = value
             invalidate()
@@ -86,16 +87,20 @@ class ResultView @JvmOverloads constructor(
         )
     }
 
+    private val circleClipPath = Path()
+
     override fun onDraw(canvas: Canvas?) {
-        canvas?.let  {
-            it.drawArc(progressRect, 270f, progressAngle, false, progressPaint)
-            if (circleClipPercentage > 0) {
-                val clipPath = Path().apply {
-                    addCircle(horizontalCenter, verticalCenter, radius * circleClipPercentage, Path.Direction.CW)
-                }
-                it.clipPath(clipPath, Region.Op.DIFFERENCE)
-                it.drawCircle(horizontalCenter, verticalCenter, radius, circlePaint)
+        if (canvas == null)
+            return
+
+        canvas.drawArc(progressRect, 270f, progressAngle, false, progressPaint)
+        circleClipPercentage?.let { circleClipPercentage ->
+            circleClipPath.apply {
+                reset()
+                addCircle(horizontalCenter, verticalCenter, radius * circleClipPercentage, Path.Direction.CW)
             }
+            canvas.clipPath(circleClipPath, Region.Op.DIFFERENCE)
+            canvas.drawCircle(horizontalCenter, verticalCenter, radius, circlePaint)
         }
     }
 
