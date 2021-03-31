@@ -18,19 +18,6 @@ class AnimationGroup @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
 
-//    - Появляется circular view, крест, таймер
-//    - Начинается анимация (цифры + progress bar)
-//    - на 75%(80?) начинается fade out у цифр. Убирается крестик (увеличение + fade out)
-//    - На 100% происходит заполнение circle in
-//    - После circle in увеличивается чекбокс (взрыв)
-//    - После 1 секунды увеличение и исчезновение кнопки, а потом ее замена на исходный элемент
-
-//    private var fullAnimationDuration: Long = -1
-//    private lateinit var progressBarTimeRange: LongRange
-//    private lateinit var closeButtonTimeRange: LongRange
-//    private lateinit var resultAnimationTimeRange: LongRange
-
-
     private val progressView: ResultView by lazy { findViewById<ResultView>(R.id.result_progress) }
     private val closeButton: ImageView by lazy { findViewById<ImageView>(R.id.result_close_image) }
     private val progressTimer: TextView by lazy { findViewById<TextView>(R.id.result_timer_text) }
@@ -51,13 +38,13 @@ class AnimationGroup @JvmOverloads constructor(
         closeButton.visibility = View.VISIBLE
         progressTimer.visibility = View.VISIBLE
 
-        val progressAnimator = createProgressAnimator()
-        val revealAnimator = createRevealAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton, progressTimer)
-        val concealCloseButtonAnimator = createConcealAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton).apply {
+        val progressAnimator: ValueAnimator = createProgressAnimator()
+        val revealAnimator: ValueAnimator = createRevealAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton, progressTimer)
+        val concealCloseButtonAnimator: ValueAnimator = createConcealAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton).apply {
             startDelay = (0.6 * mainAnimationDurationMillis).toLong()
         }
-        val fadeProgressAnimator = createFadeOutAnimator((mainAnimationDurationMillis * 0.15).toLong(), progressTimer)
-        val circleInAnimator = createCircleInAnimator(1_000L)
+        val fadeProgressAnimator: ValueAnimator = createFadeOutAnimator((mainAnimationDurationMillis * 0.15).toLong(), progressTimer)
+        val circleInAnimator: ValueAnimator = createCircleInAnimator(1_000L)
 
         AnimatorSet().apply {
             play(progressAnimator).before(circleInAnimator)
@@ -154,7 +141,5 @@ class AnimationGroup @JvmOverloads constructor(
         private const val KEY_PROGRESS_TIME_VALUE_HOLDER = "KEY_PROGRESS_TIME_VALUE_HOLDER"
 
         private const val DEFAULT_MAIN_ANIMATION_DURATION = 5_000L
-        private const val DEFAULT_SECONDARY_ANIMATION_DURATION = 1_000L
-        private const val CLOSE_ANIMATION_START_VALUE = 0.75
     }
 }
