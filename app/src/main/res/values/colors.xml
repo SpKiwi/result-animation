@@ -9,5 +9,5 @@
     <color name="white">#FFFFFFFF</color>
 
     <!-- TODO change to color_primary -->
-    <color name="result_progress_default_color">@color/purple_500</color>
+    <color name="auto_follow_progress_default_color">@color/purple_500</color>
 </resources>

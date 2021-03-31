@@ -3,11 +3,10 @@ package com.example.animation.animation
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import com.example.animation.R
 
-class ResultView @JvmOverloads constructor(
+class AutoFollowProgressView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : View(context, attrs) {
@@ -30,8 +29,8 @@ class ResultView @JvmOverloads constructor(
         }
     }
 
-    private var progressColor: Int = context.resources.getColor(R.color.result_progress_default_color, context.theme)
-    private var progressWidth: Float = context.resources.getDimension(R.dimen.result_default_width)
+    private var progressColor: Int = context.resources.getColor(R.color.auto_follow_progress_default_color, context.theme)
+    private var progressWidth: Float = context.resources.getDimension(R.dimen.auto_follow_default_width)
 
     var progressAngle: Float = 0.0f
         set(value) {
@@ -47,12 +46,12 @@ class ResultView @JvmOverloads constructor(
     init {
         context.theme.obtainStyledAttributes(
             attrs,
-            R.styleable.ResultView,
+            R.styleable.AutoFollowView,
             0, 0
         ).apply {
             try {
-                progressWidth = getDimension(R.styleable.ResultView_progressWidth, progressWidth)
-                progressColor = getColor(R.styleable.ResultView_progressColor, progressColor)
+                progressWidth = getDimension(R.styleable.AutoFollowView_progressWidth, progressWidth)
+                progressColor = getColor(R.styleable.AutoFollowView_progressColor, progressColor)
             } finally {
                 recycle()
             }

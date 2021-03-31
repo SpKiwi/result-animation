@@ -15,23 +15,23 @@ import android.widget.TextView
 import androidx.core.animation.addListener
 import com.example.animation.R
 
-class AnimationGroup @JvmOverloads constructor(
+class AutoFollowLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
 
-    private val progressView: ResultView by lazy { findViewById<ResultView>(R.id.result_progress) }
-    private val closeButton: ImageView by lazy { findViewById<ImageView>(R.id.result_close_image) }
-    private val progressTimer: TextView by lazy { findViewById<TextView>(R.id.result_timer_text) }
-    private val checkboxImage: ImageView by lazy { findViewById<ImageView>(R.id.result_checkbox) }
+    private val progressView: AutoFollowProgressView by lazy { findViewById<AutoFollowProgressView>(R.id.auto_follow_view) }
+    private val closeButton: ImageView by lazy { findViewById<ImageView>(R.id.auto_follow_close_image) }
+    private val progressTimer: TextView by lazy { findViewById<TextView>(R.id.auto_follow_timer_text) }
+    private val checkboxImage: ImageView by lazy { findViewById<ImageView>(R.id.auto_follow_checkbox) }
 
     init {
-        View.inflate(context, R.layout.animation_group, this)
+        View.inflate(context, R.layout.auto_follow_group, this)
     }
 
     private var sequenceAnimator: AnimatorSet? = null
 
-    fun changeProgressValues(mainAnimationDurationMillis: Long = DEFAULT_MAIN_ANIMATION_DURATION) {
+    fun startAutoFollowAnimation(mainAnimationDurationMillis: Long = DEFAULT_MAIN_ANIMATION_DURATION) {
         if (mainAnimationDurationMillis <= 0) {
             throw IllegalStateException("Animation duration should be greater than zero")
         }
@@ -95,22 +95,18 @@ class AnimationGroup @JvmOverloads constructor(
             end()
             removeAllListeners()
         }
+
         progressView.run {
             restoreInitialState(View.VISIBLE)
             circleClipPercentage = null
             progressAngle = 0f
         }
+
         closeButton.restoreInitialState(View.VISIBLE)
         progressTimer.restoreInitialState(View.VISIBLE)
         checkboxImage.restoreInitialState(View.INVISIBLE)
-        restoreInitialState(View.VISIBLE)
-    }
 
-    private fun View.restoreInitialState(visibility: Int) {
-        scaleX = 1f
-        scaleY = 1f
-        alpha = 1f
-        setVisibility(visibility)
+        restoreInitialState(View.VISIBLE)
     }
 
     private fun createSpringOutAnimator(duration: Long, view: View): ValueAnimator =
@@ -179,6 +175,13 @@ class AnimationGroup @JvmOverloads constructor(
             }
             addUpdateListener(valueAnimator)
         }
+
+    private fun View.restoreInitialState(visibility: Int) {
+        scaleX = 1f
+        scaleY = 1f
+        alpha = 1f
+        setVisibility(visibility)
+    }
 
     interface AutofollowListener {
         fun onAutofollowStart()

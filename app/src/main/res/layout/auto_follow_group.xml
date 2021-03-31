@@ -6,8 +6,8 @@
     android:layout_height="wrap_content"
     tools:background="@color/black">
 
-    <com.example.animation.animation.ResultView
-        android:id="@+id/result_progress"
+    <com.example.animation.animation.AutoFollowProgressView
+        android:id="@+id/auto_follow_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -18,7 +18,7 @@
         app:progressWidth="4dp" />
 
     <ImageView
-        android:id="@+id/result_close_image"
+        android:id="@+id/auto_follow_close_image"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:src="@drawable/ic_close"
@@ -29,7 +29,7 @@
         tools:visibility="visible" />
 
     <ImageView
-        android:id="@+id/result_checkbox"
+        android:id="@+id/auto_follow_checkbox"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:src="@drawable/ic_check_mark"
@@ -41,7 +41,7 @@
         tools:visibility="visible" />
 
     <TextView
-        android:id="@+id/result_timer_text"
+        android:id="@+id/auto_follow_timer_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/purple_500"

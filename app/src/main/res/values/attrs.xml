@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="ResultView">
+    <declare-styleable name="AutoFollowView">
         <attr name="progressWidth" format="dimension" />
         <attr name="progressColor" format="color" />
     </declare-styleable>
