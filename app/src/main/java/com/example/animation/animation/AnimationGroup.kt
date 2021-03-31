@@ -36,38 +36,36 @@ class AnimationGroup @JvmOverloads constructor(
             throw IllegalStateException("Animation duration should be greater than zero")
         }
 
-//        sequenceAnimator?.cancel()
-//        sequenceAnimator?.setupStartValues()
-
-        closeButton.visibility = View.VISIBLE
-        progressTimer.visibility = View.VISIBLE
+        restoreInitialState()
 
         val progressAnimator: ValueAnimator = createProgressAnimator(mainAnimationDurationMillis)
 
-        val zoomInCloseButtonAnimator: ValueAnimator = createZoomInAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton, OvershootInterpolator())
-        val fadeInCloseButtonAnimator: ValueAnimator = createFadeInAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton, OvershootInterpolator())
-        val zoomInProgressTimerAnimator: ValueAnimator = createZoomInAnimator((mainAnimationDurationMillis * 0.1).toLong(), progressTimer, OvershootInterpolator())
-        val fadeInProgressTimerAnimator: ValueAnimator = createFadeInAnimator((mainAnimationDurationMillis * 0.1).toLong(), progressTimer, OvershootInterpolator())
+        val scaleDuration = (mainAnimationDurationMillis * SCALE_PERCENT_DURATION_MULTIPLIER).toLong()
+
+        val zoomInCloseButtonAnimator: ValueAnimator = createZoomInAnimator(scaleDuration, closeButton, OvershootInterpolator())
+        val fadeInCloseButtonAnimator: ValueAnimator = createFadeInAnimator(scaleDuration, closeButton, OvershootInterpolator())
+        val zoomInProgressTimerAnimator: ValueAnimator = createZoomInAnimator(scaleDuration, progressTimer, OvershootInterpolator())
+        val fadeInProgressTimerAnimator: ValueAnimator = createFadeInAnimator(scaleDuration, progressTimer, OvershootInterpolator())
         val revealAnimator: AnimatorSet = AnimatorSet().apply {
             playTogether(zoomInCloseButtonAnimator, fadeInCloseButtonAnimator, zoomInProgressTimerAnimator, fadeInProgressTimerAnimator)
         }
 
-        val zoomOutCloseButtonAnimator: ValueAnimator = createZoomOutAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton, AnticipateOvershootInterpolator())
-        val fadeOutCloseButtonAnimator: ValueAnimator = createFadeOutAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton, AnticipateOvershootInterpolator())
+        val zoomOutCloseButtonAnimator: ValueAnimator = createZoomOutAnimator(scaleDuration, closeButton, AnticipateOvershootInterpolator())
+        val fadeOutCloseButtonAnimator: ValueAnimator = createFadeOutAnimator(scaleDuration, closeButton, AnticipateOvershootInterpolator())
         val concealCloseButtonAnimator: AnimatorSet = AnimatorSet().apply {
-            startDelay = (0.6 * mainAnimationDurationMillis).toLong()
+            startDelay = (mainAnimationDurationMillis * PROGRESS_CONCEAL_DURATION_MULTIPLIER).toLong()
             playTogether(zoomOutCloseButtonAnimator, fadeOutCloseButtonAnimator)
         }
 
-        val fadeProgressAnimator: ValueAnimator = createFadeOutAnimator((mainAnimationDurationMillis * 0.15).toLong(), progressTimer)
-        val circleInAnimator: ValueAnimator = createCircleInAnimator(300L)
-        val checkboxAnimator: ValueAnimator = createSpringInAnimator(300L, checkboxImage).apply {
+        val fadeProgressAnimator: ValueAnimator = createFadeOutAnimator(scaleDuration, progressTimer)
+        val circleInAnimator: ValueAnimator = createCircleInAnimator(STROKE_INSIDE_DURATION)
+        val checkboxAnimator: ValueAnimator = createSpringInAnimator(CHECKBOX_DURATION, checkboxImage).apply {
             addListener(onStart = {
                 checkboxImage.visibility = View.VISIBLE
             })
         }
-        val viewDisappearAnimator: ValueAnimator = createSpringOutAnimator(300, this).apply {
-            startDelay = 500
+        val viewDisappearAnimator: ValueAnimator = createSpringOutAnimator(DISAPPEAR_DURATION, this).apply {
+            startDelay = DISAPPEAR_DELAY
         }
 
         sequenceAnimator = AnimatorSet().apply {
@@ -81,14 +79,37 @@ class AnimationGroup @JvmOverloads constructor(
                         checkboxAnimator,
                         viewDisappearAnimator
                     )
-                    start()
                 },
                 AnimatorSet().apply {
                     play(concealCloseButtonAnimator).before(fadeProgressAnimator)
-                    start()
                 }
             )
+            start()
         }
+    }
+
+    private fun restoreInitialState() {
+        sequenceAnimator?.run {
+            cancel()
+            end()
+            removeAllListeners()
+        }
+        progressView.run {
+            restoreInitialState(View.VISIBLE)
+            circleClipPercentage = null
+            progressAngle = 0f
+        }
+        closeButton.restoreInitialState(View.VISIBLE)
+        progressTimer.restoreInitialState(View.VISIBLE)
+        checkboxImage.restoreInitialState(View.INVISIBLE)
+        restoreInitialState(View.VISIBLE)
+    }
+
+    private fun View.restoreInitialState(visibility: Int) {
+        scaleX = 1f
+        scaleY = 1f
+        alpha = 1f
+        setVisibility(visibility)
     }
 
     private fun createSpringOutAnimator(duration: Long, view: View): ValueAnimator =
@@ -170,5 +191,12 @@ class AnimationGroup @JvmOverloads constructor(
         private const val KEY_PROGRESS_TIME_VALUE_HOLDER = "KEY_PROGRESS_TIME_VALUE_HOLDER"
 
         private const val DEFAULT_MAIN_ANIMATION_DURATION = 5_000L
+        private const val STROKE_INSIDE_DURATION = 500L
+        private const val CHECKBOX_DURATION = 350L
+        private const val DISAPPEAR_DURATION = 350L
+        private const val DISAPPEAR_DELAY = 350L
+
+        private const val SCALE_PERCENT_DURATION_MULTIPLIER = 0.07f
+        private const val PROGRESS_CONCEAL_DURATION_MULTIPLIER = 0.6f
     }
 }
