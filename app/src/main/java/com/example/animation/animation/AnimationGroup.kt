@@ -7,6 +7,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.AnticipateOvershootInterpolator
+import android.view.animation.Interpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -29,30 +30,39 @@ class AnimationGroup @JvmOverloads constructor(
     }
 
     private val progressAnimator: ValueAnimator = ValueAnimator()
-    private var mainAnimationDurationMillis: Long = 0
 
     fun changeProgressValues(mainAnimationDurationMillis: Long = DEFAULT_MAIN_ANIMATION_DURATION) {
         if (mainAnimationDurationMillis <= 0) {
             throw IllegalStateException("Animation duration should be greater than zero")
         }
-        this.mainAnimationDurationMillis = mainAnimationDurationMillis
-
         closeButton.visibility = View.VISIBLE
         progressTimer.visibility = View.VISIBLE
 
-        val progressAnimator: ValueAnimator = createProgressAnimator()
-        val revealAnimator: ValueAnimator = createRevealAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton, progressTimer)
-        val concealCloseButtonAnimator: ValueAnimator = createConcealAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton).apply {
-            startDelay = (0.6 * mainAnimationDurationMillis).toLong()
+        val progressAnimator: ValueAnimator = createProgressAnimator(mainAnimationDurationMillis)
+
+        val zoomInCloseButtonAnimator: ValueAnimator = createZoomInAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton, OvershootInterpolator())
+        val fadeInCloseButtonAnimator: ValueAnimator = createFadeInAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton, OvershootInterpolator())
+        val zoomInProgressTimerAnimator: ValueAnimator = createZoomInAnimator((mainAnimationDurationMillis * 0.1).toLong(), progressTimer, OvershootInterpolator())
+        val fadeInProgressTimerAnimator: ValueAnimator = createFadeInAnimator((mainAnimationDurationMillis * 0.1).toLong(), progressTimer, OvershootInterpolator())
+        val revealAnimator: AnimatorSet = AnimatorSet().apply {
+            playTogether(zoomInCloseButtonAnimator, fadeInCloseButtonAnimator, zoomInProgressTimerAnimator, fadeInProgressTimerAnimator)
         }
+
+        val zoomOutCloseButtonAnimator: ValueAnimator = createZoomOutAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton, AnticipateOvershootInterpolator())
+        val fadeOutCloseButtonAnimator: ValueAnimator = createFadeOutAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton, AnticipateOvershootInterpolator())
+        val concealCloseButtonAnimator: AnimatorSet = AnimatorSet().apply {
+            startDelay = (0.6 * mainAnimationDurationMillis).toLong()
+            playTogether(zoomOutCloseButtonAnimator, fadeOutCloseButtonAnimator)
+        }
+
         val fadeProgressAnimator: ValueAnimator = createFadeOutAnimator((mainAnimationDurationMillis * 0.15).toLong(), progressTimer)
         val circleInAnimator: ValueAnimator = createCircleInAnimator(300L)
-        val checkboxAnimator: ValueAnimator = createSpringRevealAnimator(300L, checkboxImage).apply {
+        val checkboxAnimator: ValueAnimator = createSpringInAnimator(300L, checkboxImage).apply {
             addListener(onStart = {
                 checkboxImage.visibility = View.VISIBLE
             })
         }
-        val viewDisappearAnimator: ValueAnimator = createViewDisappearAnimator(300).apply {
+        val viewDisappearAnimator: ValueAnimator = createSpringOutAnimator(300, this).apply {
             startDelay = 500
         }
 
@@ -73,42 +83,26 @@ class AnimationGroup @JvmOverloads constructor(
         }
     }
 
-    private fun createViewDisappearAnimator(duration: Long): ValueAnimator {
-        val disappearValueHolder = PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)
-        return ValueAnimator().apply {
-            setValues(disappearValueHolder)
-            this.duration = duration
-            interpolator = AnticipateOvershootInterpolator()
-            addUpdateListener {
-                val disappearValue = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
-                scaleX = disappearValue
-                scaleY = disappearValue
-            }
+    private fun createSpringOutAnimator(duration: Long, view: View): ValueAnimator =
+        createDefaultAnimator(duration, AnticipateOvershootInterpolator(), PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)) {
+            val scalePercentage = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
+            view.scaleX = scalePercentage
+            view.scaleY = scalePercentage
         }
-    }
 
-    private fun createSpringRevealAnimator(duration: Long, vararg views: View): ValueAnimator {
-        val springValueHolder = PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 0f, 1f)
-        return ValueAnimator().apply {
-            setValues(springValueHolder)
-            this.duration = duration
-            interpolator = OvershootInterpolator()
-            addUpdateListener {
-                val revealValue = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
-                views.forEach { view ->
-                    view.scaleX = revealValue
-                    view.scaleY = revealValue
-                }
-            }
+    private fun createSpringInAnimator(duration: Long, view: View): ValueAnimator =
+        createDefaultAnimator(duration, OvershootInterpolator(), PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 0f, 1f)) {
+            val scalePercentage = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
+            view.scaleX = scalePercentage
+            view.scaleY = scalePercentage
         }
-    }
 
-    private fun createProgressAnimator(): ValueAnimator {
+    private fun createProgressAnimator(duration: Long): ValueAnimator {
         val progressAngleValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_ANGLE_VALUE_HOLDER, 0f, 360f)
-        val progressTimeValueHolder = PropertyValuesHolder.ofInt(KEY_PROGRESS_TIME_VALUE_HOLDER, (mainAnimationDurationMillis / 1_000).toInt(), 0)
+        val progressTimeValueHolder = PropertyValuesHolder.ofInt(KEY_PROGRESS_TIME_VALUE_HOLDER, (duration / 1_000).toInt(), 0)
         return progressAnimator.apply {
             setValues(progressAngleValueHolder, progressTimeValueHolder)
-            duration = mainAnimationDurationMillis
+            this.duration = duration
             addUpdateListener {
                 val progressAngle = progressAnimator.getAnimatedValue(KEY_PROGRESS_ANGLE_VALUE_HOLDER) as Float
                 val progressTimeMillis = progressAnimator.getAnimatedValue(KEY_PROGRESS_TIME_VALUE_HOLDER) as Int
@@ -119,61 +113,42 @@ class AnimationGroup @JvmOverloads constructor(
         }
     }
 
-    private fun createRevealAnimator(duration: Long, vararg views: View): ValueAnimator {
-        val revealValueHolder = PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 0f, 1f)
-        return ValueAnimator().apply {
-            setValues(revealValueHolder)
-            this.duration = duration
-            interpolator = OvershootInterpolator()
-            addUpdateListener {
-                val revealValue = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
-                views.forEach { view ->
-                    view.scaleX = revealValue
-                    view.scaleY = revealValue
-                    view.alpha = revealValue
-                }
-            }
+    private fun createCircleInAnimator(duration: Long, interpolator: Interpolator? = null): ValueAnimator =
+        createDefaultAnimator(duration, interpolator, PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)) {
+            progressView.circleClipPercentage = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
         }
-    }
 
-    private fun createConcealAnimator(duration: Long, view: View): ValueAnimator {
-        val concealValueHolder = PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)
-        return ValueAnimator().apply {
-            setValues(concealValueHolder)
-            this.duration = duration
-            interpolator = AnticipateOvershootInterpolator()
-            addUpdateListener {
-                val concealValue = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
-                view.scaleX = concealValue
-                view.scaleY = concealValue
-                view.alpha = concealValue
-            }
+    private fun createFadeInAnimator(duration: Long, view: View, interpolator: Interpolator? = null): ValueAnimator =
+        createDefaultAnimator(duration, interpolator, PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 0f, 1f)) { valueAnimator ->
+            view.alpha = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
         }
-    }
 
-    private fun createCircleInAnimator(duration: Long): ValueAnimator {
-        val circleValueHolder = PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)
-        return ValueAnimator().apply {
-            setValues(circleValueHolder)
-            this.duration = duration
-            addUpdateListener {
-                val showPercentage = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
-                progressView.circleClipPercentage = showPercentage
-            }
+    private fun createZoomInAnimator(duration: Long, view: View, interpolator: Interpolator? = null): ValueAnimator =
+        createDefaultAnimator(duration, interpolator, PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 0f, 1f)) { valueAnimator ->
+            view.scaleX = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
+            view.scaleY = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
         }
-    }
 
-    private fun createFadeOutAnimator(duration: Long, view: View): ValueAnimator {
-        val fadeOutValueHolder = PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)
-        return ValueAnimator().apply {
-            setValues(fadeOutValueHolder)
-            this.duration = duration
-            addUpdateListener {
-                val fadeOutValue = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
-                view.alpha = fadeOutValue
-            }
+    private fun createZoomOutAnimator(duration: Long, view: View, interpolator: Interpolator? = null): ValueAnimator =
+        createDefaultAnimator(duration, interpolator, PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)) { valueAnimator ->
+            view.scaleX = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
+            view.scaleY = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
         }
-    }
+
+    private fun createFadeOutAnimator(duration: Long, view: View, interpolator: Interpolator? = null): ValueAnimator =
+        createDefaultAnimator(duration, interpolator, PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)) { valueAnimator ->
+            view.alpha = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
+        }
+
+    private fun createDefaultAnimator(duration: Long, interpolator: Interpolator?, vararg values: PropertyValuesHolder, valueAnimator: (ValueAnimator) -> Unit): ValueAnimator =
+        ValueAnimator().apply {
+            setValues(*values)
+            this.duration = duration
+            interpolator?.let {
+                this.interpolator = interpolator
+            }
+            addUpdateListener(valueAnimator)
+        }
 
     interface AutofollowListener {
         fun onAutofollowStart()
