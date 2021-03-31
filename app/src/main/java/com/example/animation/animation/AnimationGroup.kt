@@ -29,12 +29,16 @@ class AnimationGroup @JvmOverloads constructor(
         View.inflate(context, R.layout.animation_group, this)
     }
 
-    private val progressAnimator: ValueAnimator = ValueAnimator()
+    private var sequenceAnimator: AnimatorSet? = null
 
     fun changeProgressValues(mainAnimationDurationMillis: Long = DEFAULT_MAIN_ANIMATION_DURATION) {
         if (mainAnimationDurationMillis <= 0) {
             throw IllegalStateException("Animation duration should be greater than zero")
         }
+
+//        sequenceAnimator?.cancel()
+//        sequenceAnimator?.setupStartValues()
+
         closeButton.visibility = View.VISIBLE
         progressTimer.visibility = View.VISIBLE
 
@@ -66,20 +70,24 @@ class AnimationGroup @JvmOverloads constructor(
             startDelay = 500
         }
 
-        AnimatorSet().apply {
-            playSequentially(
+        sequenceAnimator = AnimatorSet().apply {
+            playTogether(
                 AnimatorSet().apply {
-                    playTogether(progressAnimator, revealAnimator)
+                    playSequentially(
+                        AnimatorSet().apply {
+                            playTogether(progressAnimator, revealAnimator)
+                        },
+                        circleInAnimator,
+                        checkboxAnimator,
+                        viewDisappearAnimator
+                    )
+                    start()
                 },
-                circleInAnimator,
-                checkboxAnimator,
-                viewDisappearAnimator
+                AnimatorSet().apply {
+                    play(concealCloseButtonAnimator).before(fadeProgressAnimator)
+                    start()
+                }
             )
-            start()
-        }
-        AnimatorSet().apply {
-            play(concealCloseButtonAnimator).before(fadeProgressAnimator)
-            start()
         }
     }
 
@@ -100,12 +108,12 @@ class AnimationGroup @JvmOverloads constructor(
     private fun createProgressAnimator(duration: Long): ValueAnimator {
         val progressAngleValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_ANGLE_VALUE_HOLDER, 0f, 360f)
         val progressTimeValueHolder = PropertyValuesHolder.ofInt(KEY_PROGRESS_TIME_VALUE_HOLDER, (duration / 1_000).toInt(), 0)
-        return progressAnimator.apply {
+        return ValueAnimator().apply {
             setValues(progressAngleValueHolder, progressTimeValueHolder)
             this.duration = duration
             addUpdateListener {
-                val progressAngle = progressAnimator.getAnimatedValue(KEY_PROGRESS_ANGLE_VALUE_HOLDER) as Float
-                val progressTimeMillis = progressAnimator.getAnimatedValue(KEY_PROGRESS_TIME_VALUE_HOLDER) as Int
+                val progressAngle = it.getAnimatedValue(KEY_PROGRESS_ANGLE_VALUE_HOLDER) as Float
+                val progressTimeMillis = it.getAnimatedValue(KEY_PROGRESS_TIME_VALUE_HOLDER) as Int
 
                 progressView.progressAngle = progressAngle
                 progressTimer.text = progressTimeMillis.toString()
