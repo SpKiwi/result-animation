@@ -48,19 +48,10 @@ class AnimationGroup @JvmOverloads constructor(
         }
         this.mainAnimationDurationMillis = mainAnimationDurationMillis
 
-        val progressAngleValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_ANGLE_VALUE_HOLDER, 0f, 360f)
-        val progressTimeValueHolder = PropertyValuesHolder.ofInt(KEY_PROGRESS_TIME_VALUE_HOLDER, (mainAnimationDurationMillis / 1_000).toInt(), 0)
-        progressAnimator.apply {
-            setValues(progressAngleValueHolder, progressTimeValueHolder)
-            duration = mainAnimationDurationMillis
-            addUpdateListener {
-                animateProgress()
-            }
-        }
-
         closeButton.visibility = View.VISIBLE
         progressTimer.visibility = View.VISIBLE
 
+        val progressAnimator = createProgressAnimator()
         val revealAnimator = createRevealAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton, progressTimer)
         val concealCloseButtonAnimator = createConcealAnimator((mainAnimationDurationMillis * 0.1).toLong(), closeButton).apply {
             startDelay = (0.6 * mainAnimationDurationMillis).toLong()
@@ -79,12 +70,20 @@ class AnimationGroup @JvmOverloads constructor(
         }
     }
 
-    private fun animateProgress() {
-        val progressAngle = progressAnimator.getAnimatedValue(KEY_PROGRESS_ANGLE_VALUE_HOLDER) as Float
-        val progressTimeMillis = progressAnimator.getAnimatedValue(KEY_PROGRESS_TIME_VALUE_HOLDER) as Int
+    private fun createProgressAnimator(): ValueAnimator {
+        val progressAngleValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_ANGLE_VALUE_HOLDER, 0f, 360f)
+        val progressTimeValueHolder = PropertyValuesHolder.ofInt(KEY_PROGRESS_TIME_VALUE_HOLDER, (mainAnimationDurationMillis / 1_000).toInt(), 0)
+        return progressAnimator.apply {
+            setValues(progressAngleValueHolder, progressTimeValueHolder)
+            duration = mainAnimationDurationMillis
+            addUpdateListener {
+                val progressAngle = progressAnimator.getAnimatedValue(KEY_PROGRESS_ANGLE_VALUE_HOLDER) as Float
+                val progressTimeMillis = progressAnimator.getAnimatedValue(KEY_PROGRESS_TIME_VALUE_HOLDER) as Int
 
-        progressView.progressAngle = progressAngle
-        progressTimer.text = progressTimeMillis.toString()
+                progressView.progressAngle = progressAngle
+                progressTimer.text = progressTimeMillis.toString()
+            }
+        }
     }
 
     private fun createRevealAnimator(duration: Long, vararg views: View): ValueAnimator {
