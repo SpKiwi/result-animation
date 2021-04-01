@@ -42,30 +42,28 @@ class AutoFollowLayout @JvmOverloads constructor(
 
         val scaleDuration = (mainAnimationDurationMillis * SCALE_PERCENT_DURATION_MULTIPLIER).toLong()
 
-        val zoomInCloseButtonAnimator: ValueAnimator = createZoomInAnimator(scaleDuration, closeButton, OvershootInterpolator())
-        val fadeInCloseButtonAnimator: ValueAnimator = createFadeInAnimator(scaleDuration, closeButton, OvershootInterpolator())
-        val zoomInProgressTimerAnimator: ValueAnimator = createZoomInAnimator(scaleDuration, progressTimer, OvershootInterpolator())
-        val fadeInProgressTimerAnimator: ValueAnimator = createFadeInAnimator(scaleDuration, progressTimer, OvershootInterpolator())
+        val zoomInProgressElementsAnimator: ValueAnimator = createZoomInAnimator(scaleDuration, OvershootInterpolator(), closeButton)
+        val fadeInProgressElementsAnimator: ValueAnimator = createFadeInAnimator(scaleDuration, null, closeButton, progressTimer)
         val revealAnimator: AnimatorSet = AnimatorSet().apply {
-            playTogether(zoomInCloseButtonAnimator, fadeInCloseButtonAnimator, zoomInProgressTimerAnimator, fadeInProgressTimerAnimator)
+            playTogether(zoomInProgressElementsAnimator, fadeInProgressElementsAnimator)
         }
 
-        val zoomOutCloseButtonAnimator: ValueAnimator = createZoomOutAnimator(scaleDuration, closeButton, AnticipateOvershootInterpolator())
-        val fadeOutCloseButtonAnimator: ValueAnimator = createFadeOutAnimator(scaleDuration, closeButton, AnticipateOvershootInterpolator())
+        val zoomOutCloseButtonAnimator: ValueAnimator = createZoomOutAnimator(scaleDuration, AnticipateOvershootInterpolator(), closeButton)
+        val fadeOutCloseButtonAnimator: ValueAnimator = createFadeOutAnimator(scaleDuration, null, closeButton)
         val concealStartTime = (mainAnimationDurationMillis * PROGRESS_CONCEAL_DURATION_MULTIPLIER).toLong()
         val concealCloseButtonAnimator: AnimatorSet = AnimatorSet().apply {
             startDelay = concealStartTime
             playTogether(zoomOutCloseButtonAnimator, fadeOutCloseButtonAnimator)
         }
 
-        val fadeProgressAnimator: ValueAnimator = createFadeOutAnimator(mainAnimationDurationMillis - concealStartTime - scaleDuration, progressTimer)
+        val fadeProgressAnimator: ValueAnimator = createFadeOutAnimator(mainAnimationDurationMillis - concealStartTime - scaleDuration, null, progressTimer)
         val circleInAnimator: ValueAnimator = createCircleInAnimator(STROKE_INSIDE_DURATION)
-        val checkboxAnimator: ValueAnimator = createSpringInAnimator(CHECKBOX_DURATION, checkboxImage).apply {
+        val checkboxAnimator: ValueAnimator = createZoomInAnimator(CHECKBOX_DURATION, null, checkboxImage).apply {
             addListener(onStart = {
                 checkboxImage.visibility = View.VISIBLE
             })
         }
-        val viewDisappearAnimator: ValueAnimator = createSpringOutAnimator(DISAPPEAR_DURATION, this).apply {
+        val viewDisappearAnimator: ValueAnimator = createZoomOutAnimator(DISAPPEAR_DURATION, AnticipateOvershootInterpolator(), this).apply {
             startDelay = DISAPPEAR_DELAY
         }
 
@@ -109,20 +107,6 @@ class AutoFollowLayout @JvmOverloads constructor(
         restoreInitialState(View.VISIBLE)
     }
 
-    private fun createSpringOutAnimator(duration: Long, view: View): ValueAnimator =
-        createDefaultAnimator(duration, AnticipateOvershootInterpolator(), PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)) {
-            val scalePercentage = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
-            view.scaleX = scalePercentage
-            view.scaleY = scalePercentage
-        }
-
-    private fun createSpringInAnimator(duration: Long, view: View): ValueAnimator =
-        createDefaultAnimator(duration, OvershootInterpolator(), PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 0f, 1f)) {
-            val scalePercentage = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
-            view.scaleX = scalePercentage
-            view.scaleY = scalePercentage
-        }
-
     private fun createProgressAnimator(duration: Long): ValueAnimator {
         val progressAngleValueHolder = PropertyValuesHolder.ofFloat(KEY_PROGRESS_ANGLE_VALUE_HOLDER, 0f, 360f)
         val progressTimeValueHolder = PropertyValuesHolder.ofInt(KEY_PROGRESS_TIME_VALUE_HOLDER, (duration / 1_000).toInt(), 0)
@@ -139,29 +123,35 @@ class AutoFollowLayout @JvmOverloads constructor(
         }
     }
 
-    private fun createCircleInAnimator(duration: Long, interpolator: Interpolator? = null): ValueAnimator =
-        createDefaultAnimator(duration, interpolator, PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)) {
+    private fun createCircleInAnimator(duration: Long): ValueAnimator =
+        createDefaultAnimator(duration, null, PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)) {
             progressView.circleClipPercentage = it.getAnimatedValue(KEY_GENERIC_VALUE) as Float
         }
 
-    private fun createFadeInAnimator(duration: Long, view: View, interpolator: Interpolator? = null): ValueAnimator =
+    private fun createFadeInAnimator(duration: Long, interpolator: Interpolator?, vararg views: View): ValueAnimator =
         createDefaultAnimator(duration, interpolator, PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 0f, 1f)) { valueAnimator ->
-            view.alpha = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
+            views.forEach { view ->
+                view.alpha = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
+            }
         }
 
-    private fun createZoomInAnimator(duration: Long, view: View, interpolator: Interpolator? = null): ValueAnimator =
+    private fun createZoomInAnimator(duration: Long, interpolator: Interpolator?, vararg views: View): ValueAnimator =
         createDefaultAnimator(duration, interpolator, PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 0f, 1f)) { valueAnimator ->
-            view.scaleX = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
-            view.scaleY = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
+            views.forEach { view ->
+                val scale = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
+                view.scaleX = scale
+                view.scaleY = scale
+            }
         }
 
-    private fun createZoomOutAnimator(duration: Long, view: View, interpolator: Interpolator? = null): ValueAnimator =
+    private fun createZoomOutAnimator(duration: Long, interpolator: Interpolator?, view: View): ValueAnimator =
         createDefaultAnimator(duration, interpolator, PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)) { valueAnimator ->
-            view.scaleX = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
-            view.scaleY = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
+            val scale = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
+            view.scaleX = scale
+            view.scaleY = scale
         }
 
-    private fun createFadeOutAnimator(duration: Long, view: View, interpolator: Interpolator? = null): ValueAnimator =
+    private fun createFadeOutAnimator(duration: Long, interpolator: Interpolator?, view: View): ValueAnimator =
         createDefaultAnimator(duration, interpolator, PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, 1f, 0f)) { valueAnimator ->
             view.alpha = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
         }
