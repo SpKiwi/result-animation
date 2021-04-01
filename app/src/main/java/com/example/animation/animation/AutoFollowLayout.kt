@@ -1,5 +1,6 @@
 package com.example.animation.animation
 
+import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
@@ -30,15 +31,22 @@ class AutoFollowLayout @JvmOverloads constructor(
     }
 
     private var sequenceAnimator: AnimatorSet? = null
+    private var progressAnimator: ValueAnimator? = null
+    private lateinit var autofollowListener: AutofollowListener
 
-    fun startAutoFollowAnimation(mainAnimationDurationMillis: Long = DEFAULT_MAIN_ANIMATION_DURATION) {
+    fun startAutoFollowAnimation(mainAnimationDurationMillis: Long, autofollowListener: AutofollowListener) {
         if (mainAnimationDurationMillis <= 0) {
             throw IllegalStateException("Animation duration should be greater than zero")
         }
 
+        this.autofollowListener = autofollowListener
         restoreInitialState()
 
-        val progressAnimator: ValueAnimator = createProgressAnimator(mainAnimationDurationMillis)
+        progressAnimator = createProgressAnimator(mainAnimationDurationMillis).apply {
+            addListener(onEnd = {
+                autofollowListener.onAutofollowTimerElapsed()
+            })
+        }
 
         val scaleDuration = (mainAnimationDurationMillis * SCALE_PERCENT_DURATION_MULTIPLIER).toLong()
 
@@ -83,15 +91,19 @@ class AutoFollowLayout @JvmOverloads constructor(
                     playSequentially(concealCloseButtonAnimator, fadeProgressAnimator)
                 }
             )
+            addListener(onEnd = {
+                autofollowListener.onAutofollowEnd()
+            })
             start()
         }
     }
 
     private fun restoreInitialState() {
+        progressAnimator?.removeAllListeners()
         sequenceAnimator?.run {
+            removeAllListeners()
             cancel()
             end()
-            removeAllListeners()
         }
 
         progressView.run {
@@ -174,8 +186,7 @@ class AutoFollowLayout @JvmOverloads constructor(
     }
 
     interface AutofollowListener {
-        fun onAutofollowStart()
-        fun onAutofollow()
+        fun onAutofollowTimerElapsed()
         fun onAutofollowEnd()
     }
 
@@ -184,7 +195,6 @@ class AutoFollowLayout @JvmOverloads constructor(
         private const val KEY_PROGRESS_ANGLE_VALUE_HOLDER = "KEY_PROGRESS_ANGLE_VALUE_HOLDER"
         private const val KEY_PROGRESS_TIME_VALUE_HOLDER = "KEY_PROGRESS_TIME_VALUE_HOLDER"
 
-        private const val DEFAULT_MAIN_ANIMATION_DURATION = 5_000L
         private const val STROKE_INSIDE_DURATION = 500L
         private const val CHECKBOX_DURATION = 350L
         private const val DISAPPEAR_DURATION = 350L
