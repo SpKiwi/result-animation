@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="result_text_size">20dp</dimen>
-
+    <dimen name="auto_follow_text_size">20dp</dimen>
     <dimen name="auto_follow_default_width">4dp</dimen>
 </resources>

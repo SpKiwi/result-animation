@@ -1,6 +1,5 @@
 package com.example.animation.animation
 
-import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
@@ -13,7 +12,8 @@ import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.animation.addListener
+import androidx.core.animation.doOnEnd
+import androidx.core.animation.doOnStart
 import com.example.animation.R
 
 class AutoFollowLayout @JvmOverloads constructor(
@@ -34,18 +34,16 @@ class AutoFollowLayout @JvmOverloads constructor(
     private var progressAnimator: ValueAnimator? = null
     private lateinit var autofollowListener: AutofollowListener
 
-    fun startAutoFollowAnimation(mainAnimationDurationMillis: Long, autofollowListener: AutofollowListener) {
+    fun startAutoFollowAnimation(mainAnimationDurationMillis: Long, autoFollowListener: AutofollowListener) {
         if (mainAnimationDurationMillis <= 0) {
             throw IllegalStateException("Animation duration should be greater than zero")
         }
 
-        this.autofollowListener = autofollowListener
+        this.autofollowListener = autoFollowListener
         restoreInitialState()
 
         progressAnimator = createProgressAnimator(mainAnimationDurationMillis).apply {
-            addListener(onEnd = {
-                autofollowListener.onAutofollowTimerElapsed()
-            })
+            doOnEnd { autoFollowListener.onAutofollowTimerElapsed() }
         }
 
         val scaleDuration = (mainAnimationDurationMillis * SCALE_PERCENT_DURATION_MULTIPLIER).toLong()
@@ -67,9 +65,7 @@ class AutoFollowLayout @JvmOverloads constructor(
         val fadeProgressAnimator: ValueAnimator = createFadeOutAnimator(mainAnimationDurationMillis - concealStartTime - scaleDuration, null, progressTimer)
         val circleInAnimator: ValueAnimator = createCircleInAnimator(STROKE_INSIDE_DURATION)
         val checkboxAnimator: ValueAnimator = createZoomInAnimator(CHECKBOX_DURATION, null, checkboxImage).apply {
-            addListener(onStart = {
-                checkboxImage.visibility = View.VISIBLE
-            })
+            doOnStart { checkboxImage.visibility = View.VISIBLE }
         }
         val viewDisappearAnimator: ValueAnimator = createZoomOutAnimator(DISAPPEAR_DURATION, AnticipateOvershootInterpolator(), this).apply {
             startDelay = DISAPPEAR_DELAY
@@ -91,9 +87,7 @@ class AutoFollowLayout @JvmOverloads constructor(
                     playSequentially(concealCloseButtonAnimator, fadeProgressAnimator)
                 }
             )
-            addListener(onEnd = {
-                autofollowListener.onAutofollowEnd()
-            })
+            doOnEnd { autoFollowListener.onAutofollowEnd() }
             start()
         }
     }
