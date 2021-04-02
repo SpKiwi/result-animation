@@ -21,12 +21,12 @@ class AnimationActivity : AppCompatActivity() {
     }
 
     private fun launchProgressAnimation() {
-        autoFollowGroup.startAutoFollowAnimation(5_000, object : AutoFollowGroup.AutofollowListener {
-            override fun onAutofollowTimerElapsed() {
-                Toast.makeText(this@AnimationActivity, "Time elapsed", Toast.LENGTH_SHORT).show()
+        autoFollowGroup.startAutoFollowAnimation(5_000, object : AutoFollowGroup.AutoFollowListener {
+            override fun onAutoFollowCancel() {
+                Toast.makeText(this@AnimationActivity, "Autofollow cancel", Toast.LENGTH_SHORT).show()
             }
 
-            override fun onAutofollowEnd() {
+            override fun onAutoFollowEnd() {
                 Toast.makeText(this@AnimationActivity, "Autofollow end", Toast.LENGTH_SHORT).show()
             }
         })

@@ -32,18 +32,25 @@ class AutoFollowGroup @JvmOverloads constructor(
 
     private var sequenceAnimator: AnimatorSet? = null
     private var progressAnimator: ValueAnimator? = null
-    private lateinit var autofollowListener: AutofollowListener
+    private lateinit var autoFollowListener: AutoFollowListener
 
-    fun startAutoFollowAnimation(mainAnimationDurationMillis: Long, autoFollowListener: AutofollowListener) {
+    fun startAutoFollowAnimation(mainAnimationDurationMillis: Long, autoFollowListener: AutoFollowListener) {
         if (mainAnimationDurationMillis <= 0) {
             throw IllegalStateException("Animation duration should be greater than zero")
         }
 
-        this.autofollowListener = autoFollowListener
+        setOnClickListener {
+            restoreInitialState()
+            visibility = View.INVISIBLE
+            autoFollowListener.onAutoFollowCancel()
+            setOnClickListener(null)
+        }
+
+        this.autoFollowListener = autoFollowListener
         restoreInitialState()
 
         progressAnimator = createProgressAnimator(mainAnimationDurationMillis).apply {
-            doOnEnd { autoFollowListener.onAutofollowTimerElapsed() }
+            doOnEnd { setOnClickListener(null) }
         }
 
         val scaleDuration = (mainAnimationDurationMillis * SCALE_PERCENT_DURATION_MULTIPLIER).toLong()
@@ -87,7 +94,7 @@ class AutoFollowGroup @JvmOverloads constructor(
                     playSequentially(concealCloseButtonAnimator, fadeProgressAnimator)
                 }
             )
-            doOnEnd { autoFollowListener.onAutofollowEnd() }
+            doOnEnd { autoFollowListener.onAutoFollowEnd() }
             start()
         }
     }
@@ -179,9 +186,10 @@ class AutoFollowGroup @JvmOverloads constructor(
         setVisibility(visibility)
     }
 
-    interface AutofollowListener {
+    interface AutoFollowListener {
+        fun onAutoFollowCancel()
         fun onAutofollowTimerElapsed()
-        fun onAutofollowEnd()
+        fun onAutoFollowEnd()
     }
 
     companion object {
