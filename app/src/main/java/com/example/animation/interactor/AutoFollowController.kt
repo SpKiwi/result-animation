@@ -7,15 +7,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class AutoFollowController(
-    val autoFollowGroup: AutoFollowGroup, //
-    val coroutineScope: LifecycleCoroutineScope, //
-    val streamId: String,
-    val isFollowingCurrentBroadcaster: Boolean,
-    val followingCount: Int,
-    val followActionCallback: () -> Unit,
-    val autoFollowPreferences: AutoFollowPreferences, //
-    val autoFollowCancellationCache: AutoFollowCancellationCache, //
-    val autoFollowConfig: AutoFollowConfig //
+    val coroutineScope: LifecycleCoroutineScope,
+    val favoritesManagerWrapper: FavoritesManagerWrapper,
+    val autoFollowPreferences: AutoFollowPreferences,
+    val autoFollowCancellationCache: AutoFollowCancellationCache,
+    val autoFollowConfig: AutoFollowConfig
 ) {
 
     private val mutableAutofollowState: MutableLiveData<AutoFollowResult> = MutableLiveData()
@@ -23,20 +19,28 @@ class AutoFollowController(
 
     private var autoFollowJob: Job? = null
     private var isCancellationTimerOn: Boolean = false
+    private var streamId: String = ""
 
     /**
      * @return true if autoFollow job started
      **/
-    fun startAutoFollow(): Boolean {
+    fun startAutoFollow(
+        autoFollowGroup: AutoFollowGroup,
+        streamId: String,
+        publisherId: String,
+        followAction: Runnable
+    ): Boolean {
         if (!autoFollowConfig.isEnabled
-            || isFollowingCurrentBroadcaster
-            || followingCount > autoFollowConfig.followingLimit
+            || favoritesManagerWrapper.isFollowedByMe(publisherId) // todo check this as well and cancel animation if needed
+            || favoritesManagerWrapper.getMyFollowingCount() > autoFollowConfig.followingLimit
             || autoFollowPreferences.cancellationCount > autoFollowConfig.cancelLimit
             || autoFollowCancellationCache.cancelledAutoFollowsForStreams.contains(streamId)
         ) {
             mutableAutofollowState.postValue(AutoFollowResult.FAILURE)
             return false
         }
+
+        this.streamId = streamId
 
         autoFollowJob = coroutineScope.launch {
             delay(autoFollowConfig.startAfter * 1_000L)
@@ -50,7 +54,7 @@ class AutoFollowController(
 
                 override fun onAutofollowTimerElapsed() {
                     isCancellationTimerOn = false
-                    followActionCallback()
+                    followAction.run()
                 }
 
                 override fun onAutoFollowEnd() {
@@ -104,4 +108,9 @@ object AutoFollowPreferences {
 object AutoFollowCancellationCache {
     val cancelledAutoFollowsForStreams: List<String> = listOf("id")
     fun addCancelledId(id: String): Unit = Unit
+}
+
+object FavoritesManagerWrapper {
+    fun isFollowedByMe(publisherId: String) = false
+    fun getMyFollowingCount(): Int = 1
 }
