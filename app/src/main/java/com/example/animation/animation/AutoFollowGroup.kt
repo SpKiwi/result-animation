@@ -16,7 +16,7 @@ import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import com.example.animation.R
 
-class AutoFollowLayout @JvmOverloads constructor(
+class AutoFollowGroup @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {

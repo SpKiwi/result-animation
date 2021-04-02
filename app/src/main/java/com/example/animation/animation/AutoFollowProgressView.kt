@@ -48,7 +48,7 @@ class AutoFollowProgressView @JvmOverloads constructor(
             attrs,
             R.styleable.AutoFollowView,
             0, 0
-        ).apply {
+        ).run {
             try {
                 progressWidth = getDimension(R.styleable.AutoFollowView_progressWidth, progressWidth)
                 progressColor = getColor(R.styleable.AutoFollowView_progressColor, progressColor)
@@ -62,14 +62,11 @@ class AutoFollowProgressView @JvmOverloads constructor(
     private var horizontalCenter: Float = 0f
     private var verticalCenter: Float = 0f
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
 
-        val height = MeasureSpec.getSize(heightMeasureSpec)
-        val width = MeasureSpec.getSize(widthMeasureSpec)
-
-        horizontalCenter = (width / 2).toFloat()
-        verticalCenter = (height / 2).toFloat()
+        horizontalCenter = (w / 2).toFloat()
+        verticalCenter = (h / 2).toFloat()
 
         // When calculating radius we need to consider line width (stroke), so that the view would fit exactly
         radius = if (height >= width) {
@@ -88,10 +85,7 @@ class AutoFollowProgressView @JvmOverloads constructor(
 
     private val circleClipPath = Path()
 
-    override fun onDraw(canvas: Canvas?) {
-        if (canvas == null)
-            return
-
+    override fun onDraw(canvas: Canvas) {
         canvas.drawArc(progressRect, 270f, progressAngle, false, progressPaint)
         circleClipPercentage?.let { circleClipPercentage ->
             circleClipPath.apply {
