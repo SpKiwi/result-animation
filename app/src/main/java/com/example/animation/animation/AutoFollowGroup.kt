@@ -41,7 +41,6 @@ class AutoFollowGroup @JvmOverloads constructor(
 
         setOnClickListener {
             restoreInitialState()
-            visibility = View.INVISIBLE
             autoFollowListener.onAutoFollowCancel()
             setOnClickListener(null)
         }
@@ -49,7 +48,11 @@ class AutoFollowGroup @JvmOverloads constructor(
         this.autoFollowListener = autoFollowListener
         restoreInitialState()
 
+        closeButton.visibility = View.VISIBLE
+        progressTimer.visibility = View.VISIBLE
+
         progressAnimator = createProgressAnimator(mainAnimationDurationMillis).apply {
+            autoFollowListener.onAutoFollowTimerElapsed()
             doOnEnd { setOnClickListener(null) }
         }
 
@@ -99,7 +102,7 @@ class AutoFollowGroup @JvmOverloads constructor(
         }
     }
 
-    private fun restoreInitialState() {
+    fun restoreInitialState() {
         progressAnimator?.removeAllListeners()
         sequenceAnimator?.run {
             removeAllListeners()
@@ -113,8 +116,8 @@ class AutoFollowGroup @JvmOverloads constructor(
             progressAngle = 0f
         }
 
-        closeButton.restoreInitialState(View.VISIBLE)
-        progressTimer.restoreInitialState(View.VISIBLE)
+        closeButton.restoreInitialState(View.INVISIBLE)
+        progressTimer.restoreInitialState(View.INVISIBLE)
         checkboxImage.restoreInitialState(View.INVISIBLE)
 
         restoreInitialState(View.VISIBLE)
@@ -188,7 +191,7 @@ class AutoFollowGroup @JvmOverloads constructor(
 
     interface AutoFollowListener {
         fun onAutoFollowCancel()
-        fun onAutofollowTimerElapsed()
+        fun onAutoFollowTimerElapsed()
         fun onAutoFollowEnd()
     }
 

@@ -52,7 +52,7 @@ class AutoFollowController(
                     performAndTrackCancelAutoFollow()
                 }
 
-                override fun onAutofollowTimerElapsed() {
+                override fun onAutoFollowTimerElapsed() {
                     isCancellationTimerOn = false
                     followAction.run()
                 }

@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:background="#d1d1d1"
     android:layout_height="match_parent">
 
     <com.example.animation.animation.AutoFollowGroup
@@ -17,10 +18,88 @@
         android:id="@+id/testView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="click me"
+        android:text="start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/testViewRestore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="restore"
+        app:layout_constraintTop_toBottomOf="@id/testView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/inTop"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:text="In Top"
+        app:layout_constraintEnd_toStartOf="@id/inBottom"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/inBottom"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:text="In Bottom"
+        app:layout_constraintEnd_toStartOf="@id/outTop"
+        app:layout_constraintStart_toEndOf="@id/inTop"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/outTop"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:text="Out Top"
+        app:layout_constraintEnd_toStartOf="@id/outBottom"
+        app:layout_constraintStart_toEndOf="@id/inBottom"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/outBottom"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:text="Out Bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/outTop"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textToAnimate1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="First view to animate"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/testView" />
+
+    <TextView
+        android:id="@+id/textToAnimate2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Second view to animate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textToAnimate1" />
+
+    <com.example.animation.fresco.SmartImageView
+        android:id="@+id/pidorView"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="16dp"
+        app:dimOnPressed="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:placeholderImageScaleType="fitCenter"
+        app:placeholderImage="@drawable/ic_check_mark"
+        app:resizeToFit="true"
+        app:roundAsCircle="true"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

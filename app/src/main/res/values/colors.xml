@@ -10,4 +10,7 @@
 
     <!-- TODO change to color_primary -->
     <color name="auto_follow_progress_default_color">@color/purple_500</color>
+
+    <color name="selection_dim">#7f000000</color>
+
 </resources>

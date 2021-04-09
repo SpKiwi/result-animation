@@ -4,4 +4,25 @@
         <attr name="progressWidth" format="dimension" />
         <attr name="progressColor" format="color" />
     </declare-styleable>
+
+    <declare-styleable name="SmartImageView">
+        <attr name="failureImage"/>
+        <attr name="placeholderImage"/>
+        <attr name="fadeDuration"/>
+        <attr name="actualImageScaleType"/>
+        <attr name="failureImageScaleType"/>
+        <attr name="overlayImage"/>
+        <attr name="placeholderImageScaleType"/>
+        <attr name="dimOnPressed" format="boolean"/>
+        <attr name="resizeToFit" format="boolean"/>
+        <attr name="roundAsCircle"/>
+        <attr name="smartBorderWidth" format="dimension"/>
+        <attr name="smartBorderColor" format="color"/>
+        <attr name="viewAspectRatio"/>
+        <attr name="roundedCornerRadius"/>
+        <attr name="roundTopLeft"/>
+        <attr name="roundTopRight"/>
+        <attr name="roundBottomRight"/>
+        <attr name="roundBottomLeft"/>
+    </declare-styleable>
 </resources>
