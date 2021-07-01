@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <attr name="progressWidth" format="dimension" />
+    <attr name="progressColor" format="color" />
+
     <declare-styleable name="AutoFollowView">
-        <attr name="progressWidth" format="dimension" />
-        <attr name="progressColor" format="color" />
+        <attr name="progressWidth" />
+        <attr name="progressColor" />
     </declare-styleable>
 
     <declare-styleable name="SmartImageView">
@@ -25,4 +29,15 @@
         <attr name="roundBottomRight"/>
         <attr name="roundBottomLeft"/>
     </declare-styleable>
+
+    <declare-styleable name="ProgressLayout">
+        <attr name="progressWidth" />
+        <attr name="progressColor" />
+    </declare-styleable>
+
+    <declare-styleable name="CircularProgressView">
+        <attr name="progressWidth" />
+        <attr name="progressColor" />
+    </declare-styleable>
+
 </resources>

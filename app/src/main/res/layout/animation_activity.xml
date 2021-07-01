@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="#d1d1d1"
-    android:layout_height="match_parent">
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:layout_height="match_parent"
+    android:background="#d1d1d1">
 
     <com.example.animation.animation.AutoFollowGroup
         android:id="@+id/animationGroup"
@@ -29,9 +33,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="restore"
-        app:layout_constraintTop_toBottomOf="@id/testView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/testView" />
 
     <Button
         android:id="@+id/inTop"
@@ -98,8 +102,41 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:placeholderImageScaleType="fitCenter"
-        app:placeholderImage="@drawable/ic_check_mark"
         app:resizeToFit="true"
-        app:roundAsCircle="true"/>
+        app:roundAsCircle="true"
+        tools:background="@color/black" />
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/pidorViewOriginal"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:roundAsCircle="true"
+        fresco:backgroundImage="@drawable/ic_check_mark"
+        fresco:roundingBorderColor="@color/black"
+        fresco:roundingBorderWidth="4dp"
+        tools:background="@color/black" />
+
+    <com.example.animation.progress.ProgressLayout
+        android:id="@+id/progressIndicator"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:progressColor="#ff0000"
+        app:progressWidth="8dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="14dp"
+            android:background="@drawable/round_selection_dim"
+            android:src="@drawable/wef"
+            app:tint="@color/white" />
+
+    </com.example.animation.progress.ProgressLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

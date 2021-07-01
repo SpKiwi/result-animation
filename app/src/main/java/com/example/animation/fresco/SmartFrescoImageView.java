@@ -272,11 +272,13 @@ class SmartFrescoImageView extends DraweeView<GenericDraweeHierarchy> implements
                                 drawable,
                                 SmartImageView.smartToFrescoScaleType(m_placeholderImageScaleType)));
 
+                setRoundedParams(m_roundedParams);
                 // Fresco looses placeholder image scale type after a call to setPlaceholderImage().
                 //
                 // hierarchy.setPlaceholderImage(placeholderImageResourceId);
             } else {
                 hierarchy.setPlaceholderImage(/*drawable=*/ null);
+                setRoundedParams(m_roundedParams);
             }
         }
     }
@@ -311,7 +313,10 @@ class SmartFrescoImageView extends DraweeView<GenericDraweeHierarchy> implements
 
     @Override
     public void setSmartBorder(int borderColor, int borderWidth) {
-        m_roundedParams.setBorder(borderColor,borderWidth);
+        m_roundedParams.setBorder(borderColor, 16);
+//        m_roundedParams.setOverlayColor(borderColor);
+//        m_roundedParams.
+//        m_roundedParams.
         setRoundedParams(m_roundedParams);
     }
 

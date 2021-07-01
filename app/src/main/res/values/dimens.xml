@@ -2,4 +2,7 @@
 <resources>
     <dimen name="auto_follow_text_size">20dp</dimen>
     <dimen name="auto_follow_default_width">4dp</dimen>
+
+    <dimen name="circular_progress_view_default_progress_width">2.5dp</dimen>
+
 </resources>

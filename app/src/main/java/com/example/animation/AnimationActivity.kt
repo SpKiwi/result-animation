@@ -1,75 +1,50 @@
 package com.example.animation
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.animation.animation.AutoFollowGroup
 import com.example.animation.fresco.SmartImageView
+import com.example.animation.progress.CircularProgressView
+import com.example.animation.progress.ProgressLayout
+import com.facebook.drawee.view.SimpleDraweeView
 
 class AnimationActivity : AppCompatActivity() {
 
-    private val autoFollowGroup: AutoFollowGroup by lazy { findViewById<AutoFollowGroup>(R.id.animationGroup) }
     private val testView: View by lazy { findViewById<View>(R.id.testView) }
     private val testViewRestore: View by lazy { findViewById<View>(R.id.testViewRestore) }
 
-    private val inTop: View by lazy { findViewById<View>(R.id.inTop) }
-    private val inBottom: View by lazy { findViewById<View>(R.id.inBottom) }
-    private val outTop: View by lazy { findViewById<View>(R.id.outTop) }
-    private val outBottom: View by lazy { findViewById<View>(R.id.outBottom) }
+    private val progressIndicator: ProgressLayout by lazy {
+        findViewById<ProgressLayout>(R.id.progressIndicator)
+    }
 
-    private val textToAnimate1: View by lazy { findViewById<View>(R.id.textToAnimate1) }
-    private val textToAnimate2: View by lazy { findViewById<View>(R.id.textToAnimate2) }
-
-    private val pidorView: SmartImageView by lazy { findViewById<SmartImageView>(R.id.pidorView) }
-
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.animation_activity)
 
         testView.setOnClickListener {
-            launchProgressAnimation()
+//            progressIndicator.alpha = 0.3f
+            progressIndicator.startProgress(5_000, object : ProgressLayout.Callbacks {
+                override fun onProgressEnd() {
+                    Log.d("myLog", "PROGRESS END")
+                }
+
+                override fun onProgressCancel() {
+                    Log.d("myLog", "PROGRESS CANCEL")
+                }
+
+                override fun onProgressStart() {
+                    Log.d("myLog", "PROGRESS START")
+                }
+            })
         }
         testViewRestore.setOnClickListener {
-            autoFollowGroup.restoreInitialState()
+            progressIndicator.cancelProgress(false)
         }
 
-        inTop.setOnClickListener {
-            animateAutoFollowViews(TranslationType.IN_TOP, textToAnimate1, textToAnimate2)
-        }
-        inBottom.setOnClickListener {
-            animateAutoFollowViews(TranslationType.IN_BOTTOM, textToAnimate1, textToAnimate2)
-        }
-        outTop.setOnClickListener {
-            animateAutoFollowViews(TranslationType.OUT_TOP, textToAnimate1, textToAnimate2)
-        }
-        outBottom.setOnClickListener {
-            animateAutoFollowViews(TranslationType.OUT_BOTTOM, textToAnimate1, textToAnimate2)
-        }
-
-        pidorView.setSmartBorder(R.color.black, R.dimen.auto_follow_default_width)
-
-//        setSmartBorder
-//        roundAsCircle
-//        resizeToFit
-//        placeholderImageScaleType
-//        dimOnPressed
-//        imageUrl
-    }
-
-    private fun launchProgressAnimation() {
-        autoFollowGroup.startAutoFollowAnimation(5_000, object : AutoFollowGroup.AutoFollowListener {
-            override fun onAutoFollowCancel() {
-//                TODO("Not yet implemented")
-            }
-
-            override fun onAutoFollowTimerElapsed() {
-//                TODO("Not yet implemented")
-            }
-
-            override fun onAutoFollowEnd() {
-//                TODO("Not yet implemented")
-            }
-        })
     }
 
 }
