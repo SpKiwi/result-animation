@@ -24,7 +24,6 @@ class ProgressLayout @JvmOverloads constructor(
 
     var clickStrategy: ClickStrategy = ClickStrategy.CLICK_LISTENER
         private set
-    private var onClickListener: View.OnClickListener? = null
 
     private var sequenceAnimator: AnimatorSet? = null
     private var callbacks: Callbacks? = null
@@ -77,10 +76,9 @@ class ProgressLayout @JvmOverloads constructor(
     }
 
     final override fun setOnClickListener(l: OnClickListener?) {
-        this.onClickListener = l
         super.setOnClickListener {
             when (clickStrategy) {
-                ClickStrategy.CLICK_LISTENER -> onClickListener?.onClick(it)
+                ClickStrategy.CLICK_LISTENER -> l?.onClick(it)
                 ClickStrategy.CANCEL_PROGRESS -> cancelProgress(true)
             }
         }
