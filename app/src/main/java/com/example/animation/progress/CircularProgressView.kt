@@ -7,6 +7,7 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import com.example.animation.R
+import java.lang.Integer.min
 
 class CircularProgressView @JvmOverloads constructor(
     context: Context,
@@ -67,11 +68,7 @@ class CircularProgressView @JvmOverloads constructor(
         verticalCenter = h.toFloat() / 2
 
         // When calculating radius we need to consider line width (stroke), so that the view would fit exactly
-        radius = if (height >= width) {
-            (width - progressWidth)/ 2.toFloat()
-        } else {
-            (height - progressWidth)/ 2.toFloat()
-        }
+        radius = ((min(height, width) - progressWidth) / 2).toFloat()
 
         progressRect.set(
             horizontalCenter - radius,
