@@ -41,6 +41,10 @@ class AnimationActivity : AppCompatActivity() {
                 }
             })
         }
+        progressIndicator.setOnClickListener {
+            Log.d("myLog", "CLICK PROGRESSINDICATOR")
+            progressIndicator.cancelProgress(false)
+        }
         testViewRestore.setOnClickListener {
             progressIndicator.cancelProgress(false)
         }

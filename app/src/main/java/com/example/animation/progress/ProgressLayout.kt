@@ -5,6 +5,7 @@ import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AnticipateOvershootInterpolator
@@ -13,6 +14,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
+import androidx.core.view.children
 import androidx.core.view.updateLayoutParams
 import com.example.animation.*
 import kotlin.math.max
@@ -26,12 +28,13 @@ class ProgressLayout @JvmOverloads constructor(
         private set
 
     private var sequenceAnimator: AnimatorSet? = null
+    private var rotationAnimatorSet: AnimatorSet? = null
     private var callbacks: Callbacks? = null
 
-    private val circularProgressView: CircularProgressView = LayoutInflater.from(context).inflate(R.layout.progress_layout_indicator, this, false) as CircularProgressView
-    private val cancelAnimationButton: ImageView = (LayoutInflater.from(context).inflate(R.layout.progress_layout_close_button, this, false) as ImageView).apply {
+    private val circularProgressView: CircularProgressView = CircularProgressView(context, attrs)
+    private val cancelAnimationButton: ImageView = ImageView(context, attrs).apply {
         setImageResource(R.drawable.ic_close)
-        visibility = View.INVISIBLE
+        visibility = INVISIBLE
     }
 
     init {
@@ -91,29 +94,22 @@ class ProgressLayout @JvmOverloads constructor(
 
         val scaleDuration = (SCALE_PERCENT_DURATION_MULTIPLIER * duration).toLong()
 
+        val viewsToShake = children.toMutableList().apply {
+            remove(cancelAnimationButton)
+            remove(circularProgressView)
+        }.toTypedArray()
+
         sequenceAnimator = AnimatorSet().apply {
-            val rotationsAnimatorSet = AnimatorSet().apply {
-                val rotations = listOf(
-                    createRotationAnimator(SHAKE_DURATION, OvershootInterpolator(), 0f, -12f, this@ProgressLayout),
-                    createRotationAnimator(SHAKE_DURATION, OvershootInterpolator(), -12f, 20f, this@ProgressLayout),
-                    createRotationAnimator(SHAKE_DURATION, OvershootInterpolator(), 20f, -8f, this@ProgressLayout),
-                    createRotationAnimator(SHAKE_DURATION, OvershootInterpolator(), -8f, 10f, this@ProgressLayout),
-                    createRotationAnimator(SHAKE_DURATION, OvershootInterpolator(), 10f, -4f, this@ProgressLayout),
-                    createRotationAnimator(SHAKE_DURATION, OvershootInterpolator(), -4f, 4f, this@ProgressLayout),
-                    createRotationAnimator(SHAKE_DURATION, OvershootInterpolator(), 4f, 0f, this@ProgressLayout)
-                )
+            val initialRotationsAnimatorSet = AnimatorSet().apply {
+                val rotations = createShakingAnimators(*viewsToShake)
                 playSequentially(rotations)
-                doOnEnd {
-                    clickStrategy = ClickStrategy.CANCEL_PROGRESS
-                    callbacks.onProgressStart()
-                }
             }
 
             val progressAnimatorSet = AnimatorSet().apply {
                 val progressAnimation = createDefaultAnimator(duration, null, PropertyValuesHolder.ofFloat("progress", 0f, 360f)) {
                     circularProgressView.progressAngle = it.getAnimatedValue("progress") as Float
                 }
-                val zoomInAnimator = createZoomInAnimator(scaleDuration, OvershootInterpolator(), cancelAnimationButton).apply { //
+                val zoomInAnimator = createZoomInAnimator(scaleDuration, OvershootInterpolator(), cancelAnimationButton).apply {
                     doOnStart {
                         cancelAnimationButton.visibility = View.VISIBLE
                     }
@@ -127,10 +123,20 @@ class ProgressLayout @JvmOverloads constructor(
                     startDelay = concealStartTime
                     playTogether(zoomOutAnimator, fadeOutAnimator)
                 }
-
-                playTogether(progressAnimation, zoomInAnimator, fadeInAnimator, concealAnimator)
+                rotationAnimatorSet = AnimatorSet().apply {
+                    val rotations = createShakingAnimators(*viewsToShake)
+                    playSequentially(rotations)
+                    doOnEnd {
+                        start()
+                    }
+                }
+                doOnStart {
+                    clickStrategy = ClickStrategy.CANCEL_PROGRESS
+                    callbacks.onProgressStart()
+                }
+                playTogether(progressAnimation, zoomInAnimator, fadeInAnimator, concealAnimator, rotationAnimatorSet)
             }
-            playSequentially(rotationsAnimatorSet, progressAnimatorSet)
+            playSequentially(initialRotationsAnimatorSet, progressAnimatorSet)
             doOnEnd {
                 callbacks.onProgressEnd()
                 restoreInitialState()
@@ -138,6 +144,16 @@ class ProgressLayout @JvmOverloads constructor(
             start()
         }
     }
+
+    private fun createShakingAnimators(vararg view: View): List<ValueAnimator> = listOf(
+        createRotationAnimator(SHAKE_DURATION, OvershootInterpolator(), 0f, -12f, *view),
+        createRotationAnimator(SHAKE_DURATION, OvershootInterpolator(), -12f, 20f, *view),
+        createRotationAnimator(SHAKE_DURATION, OvershootInterpolator(), 20f, -8f, *view),
+        createRotationAnimator(SHAKE_DURATION, OvershootInterpolator(), -8f, 10f, *view),
+        createRotationAnimator(SHAKE_DURATION, OvershootInterpolator(), 10f, -4f, *view),
+        createRotationAnimator(SHAKE_DURATION, OvershootInterpolator(), -4f, 4f, *view),
+        createRotationAnimator(SHAKE_DURATION, OvershootInterpolator(), 4f, 0f, *view)
+    )
 
     fun cancelProgress(shouldTriggerCancelCallback: Boolean) {
         if (shouldTriggerCancelCallback) {
@@ -153,10 +169,16 @@ class ProgressLayout @JvmOverloads constructor(
         sequenceAnimator?.run {
             removeAllListeners()
             cancel()
-            end()
         }
 
-        rotation = 0f
+        rotationAnimatorSet?.run {
+            removeAllListeners()
+            cancel()
+        }
+
+        children.forEach {
+            it.rotation = 0f
+        }
 
         circularProgressView.progressAngle = 0.0f
 

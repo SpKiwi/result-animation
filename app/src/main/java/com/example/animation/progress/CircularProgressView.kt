@@ -1,11 +1,10 @@
 package com.example.animation.progress
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.example.animation.R
 import java.lang.Integer.min
 
@@ -21,8 +20,19 @@ class CircularProgressView @JvmOverloads constructor(
             isAntiAlias = true
             strokeWidth = progressWidth.toFloat()
             strokeCap = Paint.Cap.ROUND
-            color = progressColor
+            shader = LinearGradient(0f, 0f, width.toFloat(), height.toFloat(), gradientColors, gradientPercentages, Shader.TileMode.MIRROR)
         }
+    }
+
+    private val gradientColors: IntArray = IntArray(3).apply {
+        set(0, ContextCompat.getColor(context, R.color.purple_200))
+        set(1, ContextCompat.getColor(context, R.color.purple_200))
+        set(2, ContextCompat.getColor(context, R.color.purple_200))
+    }
+    private val gradientPercentages: FloatArray = FloatArray(3).apply {
+        set(0, 0f)
+        set(1, 0.5f)
+        set(2, 1f)
     }
 
     var progressColor: Int = context.resources.getColor(R.color.circular_progress_view_default_color, context.theme)

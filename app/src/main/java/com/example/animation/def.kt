@@ -46,7 +46,9 @@ fun createDefaultAnimator(duration: Long, interpolator: Interpolator?, vararg va
 
 private const val KEY_GENERIC_VALUE = "KEY_GENERIC_VALUE"
 
-fun createRotationAnimator(duration: Long, interpolator: Interpolator?, from: Float, to: Float, view: View): ValueAnimator =
+fun createRotationAnimator(duration: Long, interpolator: Interpolator?, from: Float, to: Float, vararg views: View): ValueAnimator =
     createDefaultAnimator(duration, interpolator, PropertyValuesHolder.ofFloat(KEY_GENERIC_VALUE, from, to)) { valueAnimator ->
-        view.rotation = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
+        views.forEach { view ->
+            view.rotation = valueAnimator.getAnimatedValue(KEY_GENERIC_VALUE) as Float
+        }
     }
