@@ -4,10 +4,10 @@
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:clipChildren="false"
-    android:clipToPadding="false"
     android:layout_height="match_parent"
-    android:background="#d1d1d1">
+    android:background="#d1d1d1"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <com.example.animation.animation.AutoFollowGroup
         android:id="@+id/animationGroup"
@@ -78,6 +78,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="First view to animate"
+        android:textColor="@color/teal_700"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -132,11 +133,62 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="14dp"
             android:background="@drawable/round_selection_dim"
-            android:src="@drawable/wef"
-            app:tint="@color/white" />
+            android:padding="14dp"
+            android:src="@drawable/wef" />
 
     </com.example.animation.progress.ProgressLayout>
+
+    <FrameLayout
+        android:id="@+id/outlineTest"
+        style="@style/DarkGrayBody.InputLayout.v2"
+        android:layout_width="64dp"
+        android:background="@color/black"
+        android:layout_height="64dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            style="@style/DarkGrayBody.Edit.v2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="pidor"
+            android:visibility="visible" />
+
+    </FrameLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputFirst"
+        style="@style/DarkGrayBody.InputLayout.v2"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/animationGroup">
+
+        <com.google.android.material.textfield.TextInputEditText
+            style="@style/DarkGrayBody.Edit.v2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="first" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputSecond"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="100dp"
+        app:layout_constraintStart_toEndOf="@id/textInputFirst"
+        app:layout_constraintTop_toTopOf="@id/textInputFirst">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="second" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,9 +1,14 @@
 package com.example.animation
 
 import android.annotation.SuppressLint
+import android.graphics.Outline
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
 import android.util.Log
 import android.view.View
+import android.view.ViewOutlineProvider
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.animation.animation.AutoFollowGroup
 import com.example.animation.fresco.SmartImageView
@@ -49,6 +54,51 @@ class AnimationActivity : AppCompatActivity() {
             progressIndicator.cancelProgress(false)
         }
 
+        findViewById<TextView>(R.id.textToAnimate1).apply {
+            text = SpannableString("*9672").apply {
+                setSpan(android.text.style.ForegroundColorSpan(resources.getColor(R.color.purple_200)), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+        }
+
+        findViewById<View>(R.id.outlineTest).apply {
+            outlineProvider = object : ViewOutlineProvider() {
+                override fun getOutline(view: View, outline: Outline) {
+                    val left = 0
+                    val top = 0;
+                    val right = view.width
+                    val bottom = view.height
+                    val cornerRadius = 16
+                    // all corners
+//                    outline.setRoundRect(left, top, right, bottom, cornerRadius.toFloat())
+
+                    // top corners
+//                    outline.setRoundRect(left, top, right, bottom+cornerRadius, cornerRadius.toFloat())
+
+                    // bottom corners
+//                    outline.setRoundRect(left, top - cornerRadius, right, bottom, cornerRadius.toFloat())
+
+                    /* left corners
+                    outline.setRoundRect(left, top, right + cornerRadius, bottom, cornerRadius.toFloat())*/
+
+                    /* right corners
+                    outline.setRoundRect(left - cornerRadius, top, right, bottom, cornerRadius.toFloat())*/
+
+                    /* top left corner
+                    outline.setRoundRect(left , top, right+ cornerRadius, bottom + cornerRadius, cornerRadius.toFloat())*/
+
+                    /* top right corner
+                    outline.setRoundRect(left - cornerRadius , top, right, bottom + cornerRadius, cornerRadius.toFloat())*/
+
+                    /* bottom left corner
+                    outline.setRoundRect(left, top - cornerRadius, right + cornerRadius, bottom, cornerRadius.toFloat())*/
+
+                    /* bottom right corner
+                    outline.setRoundRect(left - cornerRadius, top - cornerRadius, right, bottom, cornerRadius.toFloat())*/
+
+                }
+            }
+            clipToOutline = true
+        }
     }
 
 }
