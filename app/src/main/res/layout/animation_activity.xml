@@ -37,6 +37,44 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/testView" />
 
+    <com.example.animation.stateful.button.StatefulButton
+        android:id="@+id/stateful_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/testViewRestore" />
+
+    <Button
+        android:id="@+id/state_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:text="text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/stateful_button" />
+
+    <Button
+        android:id="@+id/state_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:text="progress"
+        app:layout_constraintStart_toEndOf="@id/state_text"
+        app:layout_constraintTop_toBottomOf="@id/stateful_button" />
+
+    <Button
+        android:id="@+id/state_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:text="result"
+        app:layout_constraintStart_toEndOf="@id/state_progress"
+        app:layout_constraintTop_toBottomOf="@id/stateful_button" />
+
     <Button
         android:id="@+id/inTop"
         android:layout_width="0dp"
@@ -142,14 +180,15 @@
     <FrameLayout
         android:id="@+id/outlineTest"
         style="@style/DarkGrayBody.InputLayout.v2"
-        android:layout_width="64dp"
-        android:background="@color/black"
+        android:layout_width="wrap_content"
         android:layout_height="64dp"
+        android:background="@color/teal_700"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
+            android:id="@+id/outlineText"
             style="@style/DarkGrayBody.Edit.v2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -169,6 +208,7 @@
         app:layout_constraintTop_toBottomOf="@id/animationGroup">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textInputFirstText"
             style="@style/DarkGrayBody.Edit.v2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -190,5 +230,14 @@
             android:hint="second" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/pidorViewImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_check_mark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,16 +5,27 @@ import android.graphics.Outline
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.ImageSpan
 import android.util.Log
 import android.view.View
 import android.view.ViewOutlineProvider
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import com.example.animation.animation.AutoFollowGroup
 import com.example.animation.fresco.SmartImageView
 import com.example.animation.progress.CircularProgressView
 import com.example.animation.progress.ProgressLayout
+import com.example.animation.stateful.button.StatefulButton
 import com.facebook.drawee.view.SimpleDraweeView
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import java.text.DecimalFormat
+import java.util.*
 
 class AnimationActivity : AppCompatActivity() {
 
@@ -63,12 +74,20 @@ class AnimationActivity : AppCompatActivity() {
         findViewById<View>(R.id.outlineTest).apply {
             outlineProvider = object : ViewOutlineProvider() {
                 override fun getOutline(view: View, outline: Outline) {
+                    AppCompatResources.getDrawable(this@AnimationActivity, R.drawable.ic_check_mark)?.let { drawable ->
+                        drawable.setTint(getColor(R.color.black))
+                        this@AnimationActivity.findViewById<ImageView>(R.id.pidorViewImage).setImageDrawable(drawable)
+                    }
                     val left = 0
                     val top = 0;
                     val right = view.width
                     val bottom = view.height
                     val cornerRadius = 16
-                    // all corners
+
+                    // no corners
+                    outline.setRoundRect(left, top, right, bottom, 0f)
+
+//                     all corners
 //                    outline.setRoundRect(left, top, right, bottom, cornerRadius.toFloat())
 
                     // top corners
@@ -98,9 +117,69 @@ class AnimationActivity : AppCompatActivity() {
                 }
             }
             clipToOutline = true
+
         }
+
+        findViewById<TextView>(R.id.outlineText).apply {
+            setCreditsInfo(this@apply, CreditsInfoViewModel(1000, true))
+        }
+
+        findViewById<TextInputLayout>(R.id.textInputFirst).apply {
+            error = "pidor"
+        }
+
+        // stateful button
+
+        val statefulButton: StatefulButton = findViewById<StatefulButton>(R.id.stateful_button)
+
+        findViewById<Button>(R.id.state_text).setOnClickListener {
+            statefulButton.state = StatefulButton.State.TEXT
+        }
+        findViewById<Button>(R.id.state_progress).setOnClickListener {
+            statefulButton.state = StatefulButton.State.PROGRESS
+        }
+        findViewById<Button>(R.id.state_result).setOnClickListener {
+            statefulButton.state = StatefulButton.State.SUCCESS
+        }
+
+//        findViewById<TextInputEditText>(R.id.textInputFirstText).apply {
+//            setError("pidor")
+//        }
     }
 
+
+
+}
+
+class CreditsInfoViewModel(
+    val credits: Int,
+    val isVip: Boolean
+)
+
+fun setCreditsInfo(textView: TextView, creditsInfoViewModel: CreditsInfoViewModel) {
+    if (creditsInfoViewModel.credits <= 0)
+        return
+
+    val coinFormatter = DecimalFormat().apply { groupingSize = 3 }
+    val formattedCoins = coinFormatter.format(creditsInfoViewModel.credits)
+    val imageSpan = ImageSpan(
+        ContextCompat.getDrawable(textView.context, R.drawable.ic_close)!!.apply {
+            setBounds(0, 0, 60, 60)
+        }, ImageSpan.ALIGN_BASELINE
+    )
+
+    val spannableString: SpannableString = if (creditsInfoViewModel.isVip) {
+        val formattedString = String.format(Locale.getDefault(), "+   %s", formattedCoins)
+        SpannableString(formattedString).apply {
+            setSpan(imageSpan, 2, 3, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+        }
+    } else {
+        val formattedString = String.format(Locale.getDefault(), "  %s", formattedCoins)
+        SpannableString(formattedString).apply {
+            setSpan(imageSpan, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+        }
+    }
+    textView.text = spannableString
 }
 
 /**

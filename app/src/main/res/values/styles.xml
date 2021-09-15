@@ -36,6 +36,7 @@
     <style name="DarkGrayBody.InputLayout.v2" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@color/stateful_shit</item>
         <item name="android:textColorHint">#ffff00</item>
+        <item name="boxStrokeWidth">1px</item>
         <item name="hintTextColor">#ff0000</item>
         <item name="hintTextAppearance">@style/InputHint.TextAppearance.v2</item>
         <item name="errorTextAppearance">@style/InputError.TextAppearance.v2</item>
@@ -55,5 +56,28 @@
 
     <color name="creditCardInputColorHint">#181a21</color>
     <color name="creditCardInputColor">#181a21</color>
+
+    <dimen name="default_button_height">56dp</dimen>
+
+    <style name="MiscAllCaps">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:letterSpacing">0.07</item>
+        <item name="android:lineSpacingExtra">10sp</item>
+        <item name="textAllCaps">true</item>
+    </style>
+
+    <style name="TangoButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:background">@drawable/tango_button</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:minHeight">@dimen/default_button_height</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textAppearance">@style/MiscAllCaps</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="backgroundTint">@null</item>
+    </style>
 
 </resources>
