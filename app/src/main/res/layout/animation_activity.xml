@@ -37,7 +37,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/testView" />
 
-    <com.example.animation.stateful.button.StatefulButton
+    <com.example.animation.stateful.button.PaymentButton
         android:id="@+id/stateful_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -15,19 +15,19 @@ import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import com.example.animation.*
 
-class StatefulButton @JvmOverloads constructor(
+class PaymentButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
 
-    private val text: TextView by lazy { findViewById<TextView>(R.id.stateful_button_text) }
+    private val textView: TextView by lazy { findViewById<TextView>(R.id.stateful_button_text) }
     private val progressBar: ProgressBar by lazy { findViewById<ProgressBar>(R.id.stateful_button_progress) }
     private val successImage: ImageView by lazy { findViewById<ImageView>(R.id.stateful_button_success_image) }
 
     private var sequenceAnimatorSet: AnimatorSet? = null
 
     init {
-        View.inflate(context, R.layout.stateful_button, this)
+        View.inflate(context, R.layout.payment_button, this)
     }
 
     var state: State = State.TEXT
@@ -39,10 +39,16 @@ class StatefulButton @JvmOverloads constructor(
             }
         }
 
+    var text: String = ""
+        set(value) {
+            field = value
+            textView.text = field
+        }
+
     private var currentStateElement: View = resolveCurrentState(state)
 
     private fun resolveCurrentState(state: State): View = when (state) {
-        State.TEXT -> text
+        State.TEXT -> textView
         State.PROGRESS -> progressBar
         State.SUCCESS -> successImage
     }
@@ -85,8 +91,8 @@ class StatefulButton @JvmOverloads constructor(
             end()
         }
 
-        if (text !== currentStateElement) {
-            text.restoreInitialState()
+        if (textView !== currentStateElement) {
+            textView.restoreInitialState()
         }
 
         if (progressBar !== currentStateElement) {

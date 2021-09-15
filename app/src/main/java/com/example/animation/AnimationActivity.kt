@@ -5,7 +5,6 @@ import android.graphics.Outline
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.SpannableStringBuilder
 import android.text.style.ImageSpan
 import android.util.Log
 import android.view.View
@@ -16,13 +15,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import com.example.animation.animation.AutoFollowGroup
-import com.example.animation.fresco.SmartImageView
-import com.example.animation.progress.CircularProgressView
 import com.example.animation.progress.ProgressLayout
-import com.example.animation.stateful.button.StatefulButton
-import com.facebook.drawee.view.SimpleDraweeView
-import com.google.android.material.textfield.TextInputEditText
+import com.example.animation.stateful.button.PaymentButton
 import com.google.android.material.textfield.TextInputLayout
 import java.text.DecimalFormat
 import java.util.*
@@ -130,16 +124,16 @@ class AnimationActivity : AppCompatActivity() {
 
         // stateful button
 
-        val statefulButton: StatefulButton = findViewById<StatefulButton>(R.id.stateful_button)
+        val paymentButton: PaymentButton = findViewById<PaymentButton>(R.id.stateful_button)
 
         findViewById<Button>(R.id.state_text).setOnClickListener {
-            statefulButton.state = StatefulButton.State.TEXT
+            paymentButton.state = PaymentButton.State.TEXT
         }
         findViewById<Button>(R.id.state_progress).setOnClickListener {
-            statefulButton.state = StatefulButton.State.PROGRESS
+            paymentButton.state = PaymentButton.State.PROGRESS
         }
         findViewById<Button>(R.id.state_result).setOnClickListener {
-            statefulButton.state = StatefulButton.State.SUCCESS
+            paymentButton.state = PaymentButton.State.SUCCESS
         }
 
 //        findViewById<TextInputEditText>(R.id.textInputFirstText).apply {
