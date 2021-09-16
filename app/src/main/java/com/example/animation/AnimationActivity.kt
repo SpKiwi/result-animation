@@ -12,6 +12,7 @@ import android.view.ViewOutlineProvider
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
@@ -126,15 +127,20 @@ class AnimationActivity : AppCompatActivity() {
 
         val paymentButton: PaymentButton = findViewById<PaymentButton>(R.id.stateful_button)
 
-        findViewById<Button>(R.id.state_text).setOnClickListener {
-            paymentButton.state = PaymentButton.State.TEXT
+        paymentButton.setOnClickListener {
+            Toast.makeText(this, "pidor", Toast.LENGTH_SHORT).show()
+            println()
         }
-        findViewById<Button>(R.id.state_progress).setOnClickListener {
-            paymentButton.state = PaymentButton.State.PROGRESS
-        }
-        findViewById<Button>(R.id.state_result).setOnClickListener {
-            paymentButton.state = PaymentButton.State.SUCCESS
-        }
+
+//        findViewById<Button>(R.id.state_text).setOnClickListener {
+//            paymentButton.state = PaymentButton.State.TEXT
+//        }
+//        findViewById<Button>(R.id.state_progress).setOnClickListener {
+//            paymentButton.state = PaymentButton.State.PROGRESS
+//        }
+//        findViewById<Button>(R.id.state_result).setOnClickListener {
+//            paymentButton.state = PaymentButton.State.SUCCESS
+//        }
 
 //        findViewById<TextInputEditText>(R.id.textInputFirstText).apply {
 //            setError("pidor")

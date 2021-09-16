@@ -30,16 +30,20 @@ class PaymentButton @JvmOverloads constructor(
         View.inflate(context, R.layout.payment_button, this)
     }
 
-    var state: State = State.TEXT
+    final override fun setOnClickListener(l: OnClickListener?) {
+        findViewById<View>(R.id.stateful_button_root).setOnClickListener(l)
+    }
+
+    var state: State? = State.TEXT
         set(value) {
-            if (field != value) {
+            if (field != value && value != null) {
                 field = value
                 val newView = resolveCurrentState(field)
                 animateViews(newView)
             }
         }
 
-    var text: String = ""
+    var text: String? = ""
         set(value) {
             field = value
             textView.text = field
@@ -47,10 +51,11 @@ class PaymentButton @JvmOverloads constructor(
 
     private var currentStateElement: View = resolveCurrentState(state)
 
-    private fun resolveCurrentState(state: State): View = when (state) {
+    private fun resolveCurrentState(state: State?): View = when (state) {
         State.TEXT -> textView
         State.PROGRESS -> progressBar
         State.SUCCESS -> successImage
+        null -> textView
     }
 
     private fun animateViews(newView: View) {
