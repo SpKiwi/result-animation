@@ -34,6 +34,10 @@ class PaymentButton @JvmOverloads constructor(
         findViewById<View>(R.id.stateful_button_root).setOnClickListener(l)
     }
 
+    override fun setEnabled(enabled: Boolean) {
+        findViewById<View>(R.id.stateful_button_root).isEnabled = enabled
+    }
+
     var state: State? = State.TEXT
         set(value) {
             if (field != value && value != null) {

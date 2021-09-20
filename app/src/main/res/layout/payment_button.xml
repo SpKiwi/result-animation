@@ -5,7 +5,8 @@
     android:id="@+id/stateful_button_root"
     style="@style/TangoButton"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:enabled="false">
 
     <TextView
         android:id="@+id/stateful_button_text"

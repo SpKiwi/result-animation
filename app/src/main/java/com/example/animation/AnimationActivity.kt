@@ -128,6 +128,7 @@ class AnimationActivity : AppCompatActivity() {
         val paymentButton: PaymentButton = findViewById<PaymentButton>(R.id.stateful_button)
 
         paymentButton.setOnClickListener {
+            paymentButton.isEnabled = false
             Toast.makeText(this, "pidor", Toast.LENGTH_SHORT).show()
             println()
         }
