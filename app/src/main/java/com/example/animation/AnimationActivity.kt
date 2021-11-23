@@ -1,7 +1,11 @@
 package com.example.animation
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Color
 import android.graphics.Outline
+import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -9,10 +13,7 @@ import android.text.style.ImageSpan
 import android.util.Log
 import android.view.View
 import android.view.ViewOutlineProvider
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
@@ -20,7 +21,9 @@ import com.example.animation.progress.ProgressLayout
 import com.example.animation.stateful.button.PaymentButton
 import com.google.android.material.textfield.TextInputLayout
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class AnimationActivity : AppCompatActivity() {
 
@@ -67,6 +70,10 @@ class AnimationActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.outlineTest).apply {
+            val drawable = background as GradientDrawable
+            drawable.setColor(Color.BLACK)
+            drawable.setStroke(10, Color.CYAN)
+
             outlineProvider = object : ViewOutlineProvider() {
                 override fun getOutline(view: View, outline: Outline) {
                     AppCompatResources.getDrawable(this@AnimationActivity, R.drawable.ic_check_mark)?.let { drawable ->
@@ -74,7 +81,7 @@ class AnimationActivity : AppCompatActivity() {
                         this@AnimationActivity.findViewById<ImageView>(R.id.pidorViewImage).setImageDrawable(drawable)
                     }
                     val left = 0
-                    val top = 0;
+                    val top = 0
                     val right = view.width
                     val bottom = view.height
                     val cornerRadius = 16
@@ -116,7 +123,8 @@ class AnimationActivity : AppCompatActivity() {
         }
 
         findViewById<TextView>(R.id.outlineText).apply {
-            setCreditsInfo(this@apply, CreditsInfoViewModel(1000, true))
+//            TimeUnit.DAYS.toMillis(10)
+            text = getDayString(Date().time + TimeUnit.DAYS.toMillis(40))
         }
 
         findViewById<TextInputLayout>(R.id.textInputFirst).apply {
@@ -146,9 +154,38 @@ class AnimationActivity : AppCompatActivity() {
 //        findViewById<TextInputEditText>(R.id.textInputFirstText).apply {
 //            setError("pidor")
 //        }
+
     }
 
 
+
+    fun getDayString(timestamp: Long): String {
+        val locale = getCurrentLocale(this)
+        val formatter = SimpleDateFormat("MMM dd, yyyy", locale)
+        val currentYearFormatter = SimpleDateFormat("MMM dd", locale)
+
+        val f = if (isCurrentYear(timestamp)) currentYearFormatter else formatter
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = timestamp
+        val result = f.format(calendar.time).replace(", ", ",\n").capitalize()
+        return result
+    }
+
+    private fun getCurrentLocale(context: Context): Locale {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            context.resources.configuration.locales.get(0)
+        } else {
+            context.resources.configuration.locale
+        }
+    }
+
+    private fun isCurrentYear(timestamp: Long): Boolean {
+        val calendar = Calendar.getInstance()
+        val currentYear = Calendar.getInstance().run { get(Calendar.YEAR) }
+
+        calendar.timeInMillis = timestamp
+        return calendar.get(Calendar.YEAR) == currentYear
+    }
 
 }
 

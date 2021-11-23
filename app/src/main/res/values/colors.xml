@@ -15,4 +15,8 @@
 
     <color name="circular_progress_view_default_color">@color/black</color>
 
+    <color name="global_surface_white_shader_4_16">#28ffffff</color>
+    <color name="tango_gray_transparent">#334C4C4C</color>
+
+
 </resources>

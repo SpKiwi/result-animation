@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#d1d1d1"
+    android:background="#000000"
     android:clipChildren="false"
     android:clipToPadding="false">
 
@@ -18,11 +18,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.appcompat.widget.SearchView
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/testView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+
     <Button
         android:id="@+id/testView"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
+        android:background="@drawable/stroke"
+        android:drawableStart="@drawable/wef"
         android:text="start"
+        android:hint="pidoras"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -81,6 +92,7 @@
         android:layout_height="50dp"
         android:text="In Top"
         app:layout_constraintEnd_toStartOf="@id/inBottom"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -88,8 +100,10 @@
         android:id="@+id/inBottom"
         android:layout_width="0dp"
         android:layout_height="50dp"
+        android:layout_weight="1"
         android:text="In Bottom"
         app:layout_constraintEnd_toStartOf="@id/outTop"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@id/inTop"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -97,8 +111,10 @@
         android:id="@+id/outTop"
         android:layout_width="0dp"
         android:layout_height="50dp"
+        android:layout_weight="1"
         android:text="Out Top"
         app:layout_constraintEnd_toStartOf="@id/outBottom"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@id/inBottom"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -106,15 +122,19 @@
         android:id="@+id/outBottom"
         android:layout_width="0dp"
         android:layout_height="50dp"
+        android:layout_weight="12"
         android:text="Out Bottom"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="2"
         app:layout_constraintStart_toEndOf="@id/outTop"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_weight="1" />
 
     <TextView
         android:id="@+id/textToAnimate1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:drawableStart="@drawable/wef"
         android:text="First view to animate"
         android:textColor="@color/teal_700"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -182,8 +202,8 @@
         style="@style/DarkGrayBody.InputLayout.v2"
         android:layout_width="wrap_content"
         android:layout_height="64dp"
-        android:background="@color/teal_700"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/stroke"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -239,5 +259,21 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.example.animation.BadgedImageView
+        android:id="@+id/badgedImageViewLol"
+        android:layout_marginBottom="32dp"
+
+        app:badgePosition="315"
+        app:mainBadgeRadius="7dp"
+        app:secondBadgeRadius="0dp"
+
+        android:src="@drawable/ic_admin"
+        android:background="@drawable/fab_grey_shader"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/testView"
+        android:layout_width="24dp"
+        android:layout_height="24dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
