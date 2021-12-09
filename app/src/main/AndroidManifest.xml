@@ -13,7 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Animation">
 
-        <activity android:name=".AnimationActivity">
+        <activity
+            android:name=".AnimationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -48,7 +48,4 @@
         <attr name="badgePosition" format="float" />
     </declare-styleable>
 
-
-
-
 </resources>

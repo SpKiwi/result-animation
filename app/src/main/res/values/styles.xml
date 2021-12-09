@@ -80,4 +80,20 @@
         <item name="backgroundTint">@null</item>
     </style>
 
+    <style name="GlobalPopup">
+        <item name="android:popupMenuStyle">@style/ManageAdminsPopup</item>
+    </style>
+
+    <style name="ManageAdminsPopup" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:windowBackground">@color/black</item>
+        <item name="android:popupBackground">@color/black</item>
+    </style>
+
+<!--    <item name="android:popupBackground">@drawable/tango_gradient_rectangle</item>-->
+<!--    <item name="android:background">@drawable/fab_grey_shader</item>-->
+<!--    <item name="android:itemBackground">@drawable/round_selection_dim</item>-->
+
+    <color name="manage_admins_popup_text_color">@color/white</color>
+    <color name="manage_admins_popup_background">@color/black</color>
+
 </resources>

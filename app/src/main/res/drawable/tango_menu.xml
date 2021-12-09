@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/tango_gradient_rectangle" android:state_above_anchor="true" />
+    <item android:drawable="@drawable/tango_gradient_rectangle_disabled" android:state_above_anchor="false"/>
+</selector>

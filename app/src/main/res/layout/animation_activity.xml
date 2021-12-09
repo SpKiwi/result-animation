@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="#666666"
     android:clipChildren="false"
     android:clipToPadding="false">
 
@@ -17,14 +17,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.appcompat.widget.SearchView
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@id/testView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/testView"
@@ -51,6 +43,7 @@
     <com.example.animation.stateful.button.PaymentButton
         android:id="@+id/stateful_button"
         android:layout_width="0dp"
+        android:layout_margin="33dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

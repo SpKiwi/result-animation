@@ -134,12 +134,17 @@ class AnimationActivity : AppCompatActivity() {
         // stateful button
 
         val paymentButton: PaymentButton = findViewById<PaymentButton>(R.id.stateful_button)
-
         paymentButton.setOnClickListener {
-            paymentButton.isEnabled = false
-            Toast.makeText(this, "pidor", Toast.LENGTH_SHORT).show()
-            println()
+//            LiveMessageAdminPopUpController().showPopUpWindow(paymentButton)
+            LiveMessageAdminPopUpController().showPopUp(paymentButton)
+            true
         }
+
+//        paymentButton.setOnClickListener {
+//            paymentButton.isEnabled = false
+//            Toast.makeText(this, "pidor", Toast.LENGTH_SHORT).show()
+//            println()
+//        }
 
 //        findViewById<Button>(R.id.state_text).setOnClickListener {
 //            paymentButton.state = PaymentButton.State.TEXT
