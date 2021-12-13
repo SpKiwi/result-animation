@@ -4,18 +4,18 @@
 
     <item
         android:id="@+id/adminMenuReply"
-        android:icon="@drawable/ic_admin"
-        android:iconTint="@color/white"
+        android:icon="@drawable/ic_admin_wrapped"
+        android:iconTint="@color/black"
         android:title="soooqa"
         app:actionViewClass="android.widget.TextView"
-        app:showAsAction="never" />
+        app:showAsAction="withText" />
 
     <item
         android:id="@+id/adminMenuMute"
         android:icon="@drawable/ic_admin"
-        android:iconTint="@color/white"
+        android:iconTint="@color/black"
         android:title="soooooqa"
         app:actionViewClass="android.widget.TextView"
-        app:showAsAction="never" />
+        app:showAsAction="withText|always" />
 
 </menu>

@@ -11,6 +11,8 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ImageSpan
 import android.util.Log
+import android.view.ContextThemeWrapper
+import android.view.Gravity
 import android.view.View
 import android.view.ViewOutlineProvider
 import android.widget.*
@@ -20,6 +22,9 @@ import androidx.core.content.ContextCompat
 import com.example.animation.progress.ProgressLayout
 import com.example.animation.stateful.button.PaymentButton
 import com.google.android.material.textfield.TextInputLayout
+import java.lang.Exception
+import java.lang.reflect.Field
+import java.lang.reflect.Method
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -137,32 +142,18 @@ class AnimationActivity : AppCompatActivity() {
         paymentButton.setOnClickListener {
 //            LiveMessageAdminPopUpController().showPopUpWindow(paymentButton)
             LiveMessageAdminPopUpController().showPopUp(paymentButton)
+//            showPopupMenu(paymentButton)
             true
         }
 
-//        paymentButton.setOnClickListener {
-//            paymentButton.isEnabled = false
-//            Toast.makeText(this, "pidor", Toast.LENGTH_SHORT).show()
-//            println()
-//        }
-
-//        findViewById<Button>(R.id.state_text).setOnClickListener {
-//            paymentButton.state = PaymentButton.State.TEXT
-//        }
-//        findViewById<Button>(R.id.state_progress).setOnClickListener {
-//            paymentButton.state = PaymentButton.State.PROGRESS
-//        }
-//        findViewById<Button>(R.id.state_result).setOnClickListener {
-//            paymentButton.state = PaymentButton.State.SUCCESS
-//        }
-
-//        findViewById<TextInputEditText>(R.id.textInputFirstText).apply {
-//            setError("pidor")
-//        }
-
     }
 
-
+    private fun showPopupMenu(view: View) {
+        val contextWrapper = ContextThemeWrapper(view.context, R.style.GlobalPopup)
+        val popupMenu = PopupMenu(contextWrapper, view, Gravity.BOTTOM)
+        popupMenu.inflate(R.menu.admin_popup_menu)
+        popupMenu.show()
+    }
 
     fun getDayString(timestamp: Long): String {
         val locale = getCurrentLocale(this)

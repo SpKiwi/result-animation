@@ -2,19 +2,18 @@ package com.example.animation
 
 import android.annotation.SuppressLint
 import android.graphics.drawable.ColorDrawable
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewTreeObserver
+import android.os.Build
+import android.view.*
+import android.widget.PopupMenu
 import android.widget.PopupWindow
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.appcompat.view.ContextThemeWrapper
-import androidx.appcompat.view.menu.MenuBuilder
-import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import java.lang.Exception
+import java.lang.reflect.Field
+import java.lang.reflect.Method
 
 class LiveMessageAdminPopUpController {
 
@@ -39,7 +38,30 @@ class LiveMessageAdminPopUpController {
 //                println("")
 //                true
 //            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                setForceShowIcon(true)
+            } else {
+                forcePopupIconsForOldDevices(this)
+            }
             show()
+        }
+    }
+
+    private fun forcePopupIconsForOldDevices(popup: PopupMenu) {
+        try {
+            val fields: Array<Field> = popup.javaClass.declaredFields
+            fields.forEach { field ->
+                if (field.name == "mPopup") {
+                    field.isAccessible = true
+                    val menuPopupHelper: Any = field.get(popup) ?: return
+                    val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
+                    val setForceIcons: Method = classPopupHelper.getMethod("setForceShowIcon", Boolean::class.javaPrimitiveType)
+                    setForceIcons.invoke(menuPopupHelper, true)
+                    return
+                }
+            }
+        } catch (e: Exception) {
+            "${e.message}"
         }
     }
 

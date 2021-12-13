@@ -80,14 +80,28 @@
         <item name="backgroundTint">@null</item>
     </style>
 
+    <style name="Theme.MyApplication" parent="Theme.AppCompat.Light.NoActionBar" />
+
     <style name="GlobalPopup">
-        <item name="android:popupMenuStyle">@style/ManageAdminsPopup</item>
+        <item name="android:popupMenuStyle">@style/popupMenu</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:layout_marginStart">6dp</item>
     </style>
 
-    <style name="ManageAdminsPopup" parent="Widget.AppCompat.PopupMenu">
-        <item name="android:windowBackground">@color/black</item>
-        <item name="android:popupBackground">@color/black</item>
+    <style name="popupMenu" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:popupBackground">@drawable/popup_menu_bg</item>
+        <item name="android:textColor">@color/white</item>
     </style>
+
+
+    <!--    <style name="GlobalPopup">-->
+<!--        <item name="android:popupMenuStyle">@style/ManageAdminsPopup</item>-->
+<!--    </style>-->
+
+<!--    <style name="ManageAdminsPopup" parent="Widget.AppCompat.PopupMenu">-->
+<!--        <item name="android:windowBackground">@color/black</item>-->
+<!--        <item name="android:popupBackground">@color/black</item>-->
+<!--    </style>-->
 
 <!--    <item name="android:popupBackground">@drawable/tango_gradient_rectangle</item>-->
 <!--    <item name="android:background">@drawable/fab_grey_shader</item>-->
