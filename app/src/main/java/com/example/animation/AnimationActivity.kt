@@ -1,26 +1,37 @@
 package com.example.animation
 
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Outline
+import android.graphics.Path
+import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ImageSpan
 import android.util.Log
-import android.view.ContextThemeWrapper
-import android.view.Gravity
-import android.view.View
-import android.view.ViewOutlineProvider
+import android.view.*
+import android.view.animation.PathInterpolator
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
+import androidx.core.view.get
+import androidx.core.view.setPadding
+import androidx.core.view.updateLayoutParams
 import com.example.animation.progress.ProgressLayout
+import com.example.animation.segmented.control.SegmentedController
 import com.example.animation.stateful.button.PaymentButton
+import com.google.android.material.tabs.TabItem
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.textfield.TextInputLayout
 import java.lang.Exception
 import java.lang.reflect.Field
@@ -146,6 +157,69 @@ class AnimationActivity : AppCompatActivity() {
             true
         }
 
+        /* TODO starting from this */
+
+        val controller = SegmentedController(
+            layout = findViewById(R.id.container),
+            radioGroup = findViewById(R.id.radioGroupTest)
+        ).apply {
+            setOnCheckedChangeListener(null)
+        }
+
+        val parent = findViewById<View>(R.id.radioGroupTest)
+//        increaseTouchArea(parent, 300.0)
+        val dayo = findViewById<View>(R.id.radioGroupDay)
+//        increaseSelfTouchArea(dayo, 150.0)
+        val weeko = findViewById<View>(R.id.radioGroupWeek)
+//        increaseSelfTouchArea(weeko, 150.0)
+        val montho = findViewById<View>(R.id.radioGroupMonth)
+        increaseTouchArea(montho, 350.0)
+
+
+
+        val tabLayout = findViewById<TabLayout>(R.id.tabLayout).apply {
+
+            val textView = TextView(this@AnimationActivity) // LayoutInflater.from(this@AnimationActivity).inflate(R.layout.tab_view, null, false)
+            textView.text = "pidarook"
+            textView.setPadding(0, 0, 0, 0)
+            val newTab = newTab().setCustomView(textView)
+            addTab(newTab)
+            setSelectedTabIndicatorHeight(textView.height)
+        }
+    }
+
+    fun increaseTouchArea(view: View, value: Double) {
+        val pixels = value.toInt()
+        view.apply {
+            (parent as? View)?.post {
+                val rect = Rect()
+                getHitRect(rect)
+                rect.apply {
+                    top -= pixels
+                    left -= pixels
+                    bottom += pixels
+                    right += pixels
+                }
+                touchDelegate = TouchDelegate(rect, this)
+            }
+        }
+    }
+
+    fun increaseSelfTouchArea(view: View, value: Double) {
+        val pixels = value.toInt()
+        view.apply {
+            (parent as? View)?.post {
+                val rect = Rect()
+                getHitRect(rect)
+                rect.apply {
+                    top -= pixels
+                    left -= pixels
+                    bottom += pixels
+                    right += pixels
+                }
+                (parent as View).touchDelegate = TouchDelegate(rect, this)
+            }
+        }
     }
 
     private fun showPopupMenu(view: View) {

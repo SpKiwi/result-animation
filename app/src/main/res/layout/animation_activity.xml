@@ -3,11 +3,92 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/pattern_tiled"
     android:clipChildren="false"
     android:clipToPadding="false">
+
+    <RadioGroup
+        android:id="@+id/radioGroupTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        app:layout_constraintBottom_toTopOf="@+id/badgedImageViewLol"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.example.animation.segmented.control.SegmentedRadioButton
+            android:id="@+id/radioGroupDay"
+            style="@style/TimePeriodButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Day" />
+
+        <RadioButton
+            android:id="@+id/radioGroupWeek"
+            style="@style/TimePeriodButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Week" />
+
+        <RadioButton
+            android:id="@+id/radioGroupMonth"
+            style="@style/TimePeriodButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Month" />
+
+    </RadioGroup>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toTopOf="@id/radioGroupTest"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tabBackground="@android:color/transparent"
+        app:tabGravity="start"
+        app:tabIndicator="@drawable/toggle_item_bg_selected"
+        app:tabIndicatorColor="#ff0"
+        app:tabIndicatorGravity="center"
+        app:tabIndicatorHeight="24dp"
+        app:tabMaxWidth="0dp"
+        android:clipToPadding="true"
+        app:tabMinWidth="0dp"
+        app:tabMode="scrollable"
+        app:tabRippleColor="@null"
+        app:tabUnboundedRipple="false"
+        app:tabSelectedTextColor="@android:color/black"
+        app:tabTextAppearance="@style/TabItemCustomLol"
+        app:tabTextColor="@android:color/black">
+
+<!--        <com.google.android.material.tabs.TabItem-->
+<!--            android:id="@+id/myNewTab"-->
+<!--            style="@style/TabItemCustomLol"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="1111" />-->
+
+<!--        <com.google.android.material.tabs.TabItem-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="2" />-->
+
+<!--        <com.google.android.material.tabs.TabItem-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="333333" />-->
+
+<!--        <com.google.android.material.tabs.TabItem-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="4444444" />-->
+
+    </com.google.android.material.tabs.TabLayout>
 
     <com.example.animation.animation.AutoFollowGroup
         android:id="@+id/animationGroup"
@@ -24,8 +105,8 @@
         android:layout_height="wrap_content"
         android:background="@drawable/stroke"
         android:drawableStart="@drawable/wef"
-        android:text="start"
         android:hint="pidoras"
+        android:text="start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,8 +124,8 @@
     <com.example.animation.stateful.button.PaymentButton
         android:id="@+id/stateful_button"
         android:layout_width="0dp"
-        android:layout_margin="33dp"
         android:layout_height="wrap_content"
+        android:layout_margin="33dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/testViewRestore" />
@@ -195,8 +276,8 @@
         style="@style/DarkGrayBody.InputLayout.v2"
         android:layout_width="wrap_content"
         android:layout_height="64dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:background="@drawable/stroke"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -255,18 +336,18 @@
 
     <com.example.animation.BadgedImageView
         android:id="@+id/badgedImageViewLol"
-        android:layout_marginBottom="32dp"
+        android:layout_width="24dp"
 
-        app:badgePosition="315"
-        app:mainBadgeRadius="7dp"
-        app:secondBadgeRadius="0dp"
+        android:layout_height="24dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/fab_grey_shader"
 
         android:src="@drawable/ic_admin"
-        android:background="@drawable/fab_grey_shader"
+        app:badgePosition="315"
+        app:layout_constraintBottom_toTopOf="@id/testView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/testView"
-        android:layout_width="24dp"
-        android:layout_height="24dp" />
+        app:mainBadgeRadius="7dp"
+        app:secondBadgeRadius="0dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

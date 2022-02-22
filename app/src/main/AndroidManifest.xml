@@ -3,6 +3,7 @@
     package="com.example.animation">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".App"
@@ -13,8 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Animation">
 
-        <activity
-            android:name=".AnimationActivity">
+        <activity android:name=".AnimationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,10 +22,11 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".cursor.CursorActivity"></activity>
+
         <activity
             android:name=".scroll.ScrollActivity"
-            android:windowSoftInputMode="adjustResize">
-        </activity>
+            android:windowSoftInputMode="adjustResize"></activity>
 
         <activity
             android:name=".MainActivity"
